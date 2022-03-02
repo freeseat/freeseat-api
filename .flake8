@@ -1,0 +1,6 @@
+[flake8]
+max-complexity = 15
+max-line-length = 88
+per-file-ignores =
+    *migrations*, __init__.py, settings*, env.py: F401, F403,
+    *migrations*: E501

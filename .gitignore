@@ -3,8 +3,19 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# JetBrains folders
+.idea/
+
+# Terraform local files
+.terraform/
+
 # C extensions
 *.so
+
+# Django Files
+app/static
+app/media
+app/core/settings_local.py
 
 # Distribution / packaging
 .Python
