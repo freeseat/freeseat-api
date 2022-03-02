@@ -1,19 +1,7 @@
-from uuid import uuid4
-
 from django.db import models
 from django.utils import timezone
 
-__all__ = ["UUID4Field", "LowerCaseCharField", "PhoneNumberField", "get_file_directory"]
-
-
-class UUID4Field(
-    models.fields.AutoFieldMixin,
-    models.UUIDField,
-    metaclass=models.fields.AutoFieldMeta,
-):
-    def __init__(self, verbose_name=None, **kwargs):
-        kwargs["default"] = uuid4()
-        super().__init__(verbose_name, **kwargs)
+__all__ = ["LowerCaseCharField", "PhoneNumberField", "get_file_directory"]
 
 
 class LowerCaseCharField(models.CharField):
