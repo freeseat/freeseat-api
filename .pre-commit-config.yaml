@@ -1,0 +1,47 @@
+repos:
+  - repo: https://github.com/timothycrosley/isort
+    rev: 5.10.1
+    hooks:
+      - id: isort
+
+  - repo: https://github.com/ambv/black
+    rev: 21.12b0
+    hooks:
+      - id: black
+        language_version: python3.10
+
+  - repo: https://gitlab.com/pycqa/flake8
+    rev: 4.0.1
+    hooks:
+      - id: flake8
+
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.0
+    hooks:
+    - id: bandit
+      exclude: '/tests/'
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.0.1
+    hooks:
+      - id: check-builtin-literals # Require literal syntax when initializing empty or zero Python builtin types
+      - id: check-docstring-first # Checks for a common error of placing code before the docstring.
+      - id: check-yaml # Attempts to load all yaml files to verify syntax
+      - id: check-toml # Attempts to load all TOML files to verify syntax
+      - id: detect-private-key # Checks for the existence of private keys
+      - id: end-of-file-fixer # Makes sure files end in a newline and only a newline
+
+  - repo: local
+    hooks:
+      - id: migrations-check
+        language: system
+        name: Check for missing migrations.
+        entry: sh -c "./app/manage.py makemigrations --check --dry-run"
+        files: "models/"
+        stages: [commit]
+
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v2.20.0
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]
