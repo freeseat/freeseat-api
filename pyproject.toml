@@ -15,7 +15,7 @@ django-filter = "^21.1"
 django-simple-history = "^3.0.0"
 django-modeltranslation = "^0.17.3"
 djangorestframework-gis = "^0.18"
-Pillow = "^9.0.0"
+Pillow = "^9.0.1"
 drf-spectacular = "^0.21.1"
 django-picklefield = "^3.0.1"
 
