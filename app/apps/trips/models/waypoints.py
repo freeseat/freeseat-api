@@ -16,8 +16,9 @@ class WayPoint(AbstractUUIDModel):
         db_index=True,
     )
     point = models.PointField(
-        verbose_name=_("to point"),
+        verbose_name=_("point"),
         geography=True,
+        spatial_index=True,
     )
 
     class Meta:

@@ -24,7 +24,6 @@ class TripRequest(AbstractUUIDModel, GeoItem):
         related_name="created_trip_requests",
         on_delete=models.CASCADE,
         db_index=True,
-        editable=False,
         null=True,
         blank=True,
     )
@@ -36,6 +35,12 @@ class TripRequest(AbstractUUIDModel, GeoItem):
     )
     updated_at = models.DateTimeField(
         verbose_name=_("updated at"),
+        auto_now_add=True,
+        editable=False,
+        db_index=True,
+    )
+    last_active_at = models.DateTimeField(
+        verbose_name=_("last ative at"),
         auto_now_add=True,
         editable=False,
         db_index=True,

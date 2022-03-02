@@ -17,15 +17,6 @@ class UserSession(models.Model):
         editable=False,
         db_index=True,
     )
-    user = models.ForeignKey(
-        verbose_name=_("user"),
-        to="accounts.User",
-        related_name="user_sessions",
-        on_delete=models.CASCADE,
-        db_index=True,
-        editable=False,
-        null=True,
-    )
     cookies_accepted_at = models.DateTimeField(
         verbose_name=_("cookies accepted at"),
         auto_now_add=True,

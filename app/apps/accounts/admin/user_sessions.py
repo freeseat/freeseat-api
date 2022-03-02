@@ -9,12 +9,10 @@ __all__ = ["UserSessionAdmin"]
 class UserSessionAdmin(SimpleHistoryAdmin):
     list_display = (
         "id",
-        "user",
         "created_at",
     )
     readonly_fields = (
         "id",
-        "user",
         "created_at",
     )
     date_hierarchy = "created_at"
