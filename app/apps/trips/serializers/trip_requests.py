@@ -40,27 +40,30 @@ class TripRequestPublicSerializer(serializers.ModelSerializer):
             "waypoints",
         ]
 
-    @transaction.atomic
-    def create(self, validated_data):
-        waypoints = validated_data.pop("waypoints")
-
-        trip_request = super().create(validated_data)
-
-        for waypoint in waypoints:
-            WayPointSerializer.Meta.model.objects.create(
-                trip_request=trip_request,
-                order=waypoint.get("order"),
-                point=Point(
-                    *waypoint.get("point").get("coords"),
-                ),
-            )
-
-        return trip_request
-
 
 class TripRequestPrivateSerializer(TripRequestPublicSerializer):
     class Meta(TripRequestPublicSerializer.Meta):
         fields = TripRequestPublicSerializer.Meta.fields + ["id"]
+
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        waypoints = validated_data.pop("waypoints", None)
+
+        trip_request = super().update(instance, validated_data)
+
+        if waypoints:
+            trip_request.waypoints.all().delete()
+
+            for waypoint in waypoints:
+                WayPointSerializer.Meta.model.objects.create(
+                    trip_request=trip_request,
+                    order=waypoint.get("order"),
+                    point=Point(
+                        *waypoint.get("point").get("coords"),
+                    ),
+                )
+
+        return trip_request
 
 
 class TripRequestCreateSerializer(TripRequestPrivateSerializer):
@@ -79,3 +82,20 @@ class TripRequestCreateSerializer(TripRequestPrivateSerializer):
 
     class Meta(TripRequestPrivateSerializer.Meta):
         fields = TripRequestPrivateSerializer.Meta.fields + ["user_session"]
+
+    @transaction.atomic
+    def create(self, validated_data):
+        waypoints = validated_data.pop("waypoints")
+
+        trip_request = super().create(validated_data)
+
+        for waypoint in waypoints:
+            WayPointSerializer.Meta.model.objects.create(
+                trip_request=trip_request,
+                order=waypoint.get("order"),
+                point=Point(
+                    *waypoint.get("point").get("coords"),
+                ),
+            )
+
+        return trip_request

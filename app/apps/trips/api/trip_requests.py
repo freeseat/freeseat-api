@@ -34,10 +34,6 @@ class TripRequestsFilter(filterset.FilterSet):
         lookup_expr="lte",
     )
 
-    #
-    # def filter_by_number_of_people(self, queryset, name, value):
-    #     return queryset.filter(number_of_people__lte=value)
-
     class Meta:
         model = TripRequestPublicSerializer.Meta.model
         fields = [
@@ -75,6 +71,7 @@ class TripRequestsAPIViewSet(viewsets.ModelViewSet):
         return qs.prefetch_related("waypoints")
 
     def get_serializer_class(self):
+        print(self.action)
         if self.action == "create":
             return TripRequestCreateSerializer
         if (
@@ -82,6 +79,7 @@ class TripRequestsAPIViewSet(viewsets.ModelViewSet):
             or UserSession.objects.filter(
                 id=self.request.query_params.get("user_session")
             ).exists()
+            or self.action in ["update", "partial_update"]
         ):
             return TripRequestPrivateSerializer
         return super().get_serializer_class()
