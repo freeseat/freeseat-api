@@ -7,10 +7,14 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.validators import ValidationError
 
-__all__ = ["TripRequestSerializer", "TripRequestCreateSerializer"]
+__all__ = [
+    "TripRequestPublicSerializer",
+    "TripRequestPrivateSerializer",
+    "TripRequestCreateSerializer",
+]
 
 
-class TripRequestSerializer(serializers.ModelSerializer):
+class TripRequestPublicSerializer(serializers.ModelSerializer):
     waypoints = WayPointSerializer(many=True)
 
     def validate_waypoints(self, waypoints):
@@ -25,7 +29,6 @@ class TripRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = TripRequest
         read_only_fields = [
-            "id",
             "last_active_at",
         ]
         fields = read_only_fields + [
@@ -55,7 +58,12 @@ class TripRequestSerializer(serializers.ModelSerializer):
         return trip_request
 
 
-class TripRequestCreateSerializer(TripRequestSerializer):
+class TripRequestPrivateSerializer(TripRequestPublicSerializer):
+    class Meta(TripRequestPublicSerializer.Meta):
+        fields = TripRequestPublicSerializer.Meta.fields + ["id"]
+
+
+class TripRequestCreateSerializer(TripRequestPrivateSerializer):
     user_session = serializers.PrimaryKeyRelatedField(
         write_only=True, queryset=UserSession.objects.all(), required=False
     )
@@ -69,5 +77,5 @@ class TripRequestCreateSerializer(TripRequestSerializer):
 
         return attrs
 
-    class Meta(TripRequestSerializer.Meta):
-        fields = TripRequestSerializer.Meta.fields + ["user_session"]
+    class Meta(TripRequestPrivateSerializer.Meta):
+        fields = TripRequestPrivateSerializer.Meta.fields + ["user_session"]

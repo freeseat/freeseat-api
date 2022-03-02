@@ -79,14 +79,13 @@ class TripRequest(AbstractUUIDModel, GeoItem):
     )
 
     class LuggageSize(models.IntegerChoices):
-        NO_LUGGAGE = 0, _("no luggage")
         SMALL_BAGS = 1, _("small bags")
         LARGE_BAGS = 2, _("large bags")
         CARGO = 3, _("cargo")
 
     luggage_size = models.PositiveSmallIntegerField(
         verbose_name=_("luggage size"),
-        default=LuggageSize.NO_LUGGAGE,
+        default=LuggageSize.SMALL_BAGS,
         choices=LuggageSize.choices,
         db_index=True,
     )
