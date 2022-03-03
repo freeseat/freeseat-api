@@ -24,3 +24,8 @@ class UserAdmin(SimpleHistoryAdmin):
         if not change:
             obj.registration_source = User.RegistrationSource.ADMIN_PANEL
         super().save_model(request, obj, form, change)
+
+    def get_readonly_fields(self, request, obj=None):
+        if not obj:
+            return ()
+        return super().get_readonly_fields(request, obj)

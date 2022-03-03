@@ -41,10 +41,12 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.gis",
     "rest_framework",
+    "django_admin_geomap",
     "django_filters",
     "simple_history",
     "drf_spectacular",
     "apps.accounts",
+    "apps.trips",
 ]
 
 MIDDLEWARE = [
