@@ -89,11 +89,14 @@ class TripRequestsAPIViewSet(viewsets.ModelViewSet):
         if self.request.user.is_authenticated:
             qs = qs.filter(created_by=self.request.user)
 
-        elif user_session := self.request.query_params.get("user_session"):
-            user_session.last_active_at = now
-            user_session.save(update_fields=["last_active_at"])
-
-            qs = qs.filter(user_session=user_session)
+        elif user_session_id := self.request.query_params.get("user_session"):
+            try:
+                user_session = UserSession.objects.get(id=user_session_id)
+                user_session.last_active_at = now
+                user_session.save(update_fields=["last_active_at"])
+                qs = qs.filter(user_session=user_session)
+            except UserSession.DoesNotExist:
+                return qs
 
         else:
             return qs
