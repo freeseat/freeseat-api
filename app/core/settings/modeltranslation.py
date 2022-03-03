@@ -8,6 +8,6 @@ LANGUAGE_CODE = "en"
 LANGUAGES = (
     ("en", _("English")),
     ("ru", _("Русский")),
-    ("ua", _("Український")),
+    ("uk", _("Український")),
     ("pl", _("Polski")),
 )
