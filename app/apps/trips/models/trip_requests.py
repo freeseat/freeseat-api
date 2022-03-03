@@ -39,7 +39,7 @@ class TripRequest(AbstractUUIDModel, GeoItem):
 
     updated_at = models.DateTimeField(
         verbose_name=_("updated at"),
-        auto_now_add=True,
+        auto_now=True,
         editable=False,
         db_index=True,
     )

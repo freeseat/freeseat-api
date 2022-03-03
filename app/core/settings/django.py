@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "simple_history",
     "drf_spectacular",
     "apps.accounts",
+    "apps.articles",
     "apps.trips",
 ]
 
