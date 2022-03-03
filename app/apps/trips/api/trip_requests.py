@@ -9,7 +9,9 @@ from django.utils.translation import gettext_lazy as _
 from django_filters import fields, filters, filterset
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
+from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.response import Response
 
 __all__ = ["TripRequestsAPIViewSet"]
 
@@ -46,7 +48,7 @@ class TripRequestsFilter(filterset.FilterSet):
 
 class TripRequestsAPIViewSet(viewsets.ModelViewSet):
     serializer_class = TripRequestPublicSerializer
-    model = TripRequestPublicSerializer.Meta.model
+    model = serializer_class.Meta.model
     pagination_class = PageNumberPagination
     filter_backends = [
         DjangoFilterBackend,
@@ -60,6 +62,9 @@ class TripRequestsAPIViewSet(viewsets.ModelViewSet):
             qs = qs.filter(created_by=self.request.user)
 
         elif user_session := self.request.query_params.get("user_session"):
+            user_session.last_active_at = timezone.now()
+            user_session.save(update_fields=["last_active_at"])
+
             qs = qs.filter(user_session=user_session)
 
         else:
@@ -71,7 +76,6 @@ class TripRequestsAPIViewSet(viewsets.ModelViewSet):
         return qs.prefetch_related("waypoints")
 
     def get_serializer_class(self):
-        print(self.action)
         if self.action == "create":
             return TripRequestCreateSerializer
         if (
@@ -86,3 +90,11 @@ class TripRequestsAPIViewSet(viewsets.ModelViewSet):
 
     def perform_destroy(self, instance):
         instance.state = self.model.TripState.CANCELLED
+        instance.save(update_fields=["state"])
+
+    @action(detail=True, methods=["post"], url_path="complete")
+    def complete_trip_request(self, request, *args, **kwargs):
+        trip_request = self.get_object()
+        trip_request.state = self.model.TripState.COMPLETED
+        trip_request.save(update_fields=["state"])
+        return Response()

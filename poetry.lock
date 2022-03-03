@@ -136,7 +136,7 @@ develop = false
 
 [package.source]
 type = "git"
-url = "https://github.com/julleks/django.admin.geomap"
+url = "https://github.com/julleks/django.admin.geomap.git"
 reference = "main"
 resolved_reference = "f20857d33823402f657d8d21c0cad3849099e662"
 

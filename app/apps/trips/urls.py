@@ -1,4 +1,3 @@
-"""Django url router."""
 from apps.trips.api import TripRequestsAPIViewSet
 from rest_framework import routers
 
