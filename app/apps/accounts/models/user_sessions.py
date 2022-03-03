@@ -9,7 +9,6 @@ class UserSession(models.Model):
         verbose_name=_("id"),
         max_length=255,
         primary_key=True,
-        editable=False,
     )
     created_at = models.DateTimeField(
         verbose_name=_("created at"),
@@ -20,6 +19,18 @@ class UserSession(models.Model):
     cookies_accepted_at = models.DateTimeField(
         verbose_name=_("cookies accepted at"),
         auto_now_add=True,
+        editable=False,
+        db_index=True,
+    )
+    terms_accepted_at = models.DateTimeField(
+        verbose_name=_("terms and conditions accepted at"),
+        auto_now_add=True,
+        editable=False,
+        db_index=True,
+    )
+    last_active_at = models.DateTimeField(
+        verbose_name=_("last active at"),
+        auto_now=True,
         editable=False,
         db_index=True,
     )

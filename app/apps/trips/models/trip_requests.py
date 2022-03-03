@@ -18,6 +18,7 @@ class TripRequest(AbstractUUIDModel, GeoItem):
         null=True,
         blank=True,
     )
+
     user_session = models.ForeignKey(
         verbose_name=_("user session"),
         to="accounts.UserSession",
@@ -26,22 +27,26 @@ class TripRequest(AbstractUUIDModel, GeoItem):
         db_index=True,
         null=True,
         blank=True,
+        editable=False,
     )
+
     created_at = models.DateTimeField(
         verbose_name=_("created at"),
         auto_now_add=True,
         editable=False,
         db_index=True,
     )
+
     updated_at = models.DateTimeField(
         verbose_name=_("updated at"),
         auto_now_add=True,
         editable=False,
         db_index=True,
     )
+
     last_active_at = models.DateTimeField(
-        verbose_name=_("last ative at"),
-        auto_now_add=True,
+        verbose_name=_("last active at"),
+        auto_now=True,
         editable=False,
         db_index=True,
     )
