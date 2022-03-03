@@ -1,15 +1,7 @@
 from django.db import models
 from django.utils import timezone
 
-__all__ = ["LowerCaseCharField", "PhoneNumberField", "get_file_directory"]
-
-
-class LowerCaseCharField(models.CharField):
-    def __init__(self, *args, **kwargs):
-        super(LowerCaseCharField, self).__init__(*args, **kwargs)
-
-    def get_prep_value(self, value):
-        return str(value).lower()
+__all__ = ["PhoneNumberField", "get_file_directory"]
 
 
 class PhoneNumberField(models.CharField):

@@ -22,6 +22,8 @@ django-admin-geomap = {git = "https://github.com/julleks/django.admin.geomap.git
 sentry-sdk = "^1.5.6"
 django-cors-headers = "^3.11.0"
 newrelic = "^7.6.0"
+pytest-django = "^4.5.2"
+model-bakery = "^1.4.0"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^2.17.0"
