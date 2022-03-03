@@ -16,7 +16,7 @@ COPY poetry.lock pyproject.toml newrelic.ini ./
 RUN poetry config virtualenvs.create false && \
     poetry install --no-dev --no-interaction --no-ansi
 
-COPY app ./
+COPY app newrelic.ini ./
 
 RUN python manage.py collectstatic --noinput
 
