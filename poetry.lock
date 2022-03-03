@@ -153,11 +153,11 @@ Django = ">=2.2"
 
 [[package]]
 name = "django-modeltranslation"
-version = "0.17.3"
+version = "0.17.5"
 description = "Translates Django models using a registration approach."
 category = "main"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.6.2"
 
 [package.dependencies]
 django = ">=2.2"
@@ -599,7 +599,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "490e9927a9898c44bfeffdc9faf4d0580eb56f25d83bacd4084ab57adaf5044c"
+content-hash = "c73614d5a6fc26361aeb78da1997ba2839ab3ce125b6aa06ed4342582a7dc94b"
 
 [metadata.files]
 argcomplete = [
@@ -691,7 +691,7 @@ django-filter = [
     {file = "django_filter-21.1-py3-none-any.whl", hash = "sha256:f4a6737a30104c98d2e2a5fb93043f36dd7978e0c7ddc92f5998e85433ea5063"},
 ]
 django-modeltranslation = [
-    {file = "django-modeltranslation-0.17.3.tar.gz", hash = "sha256:fdbb32edcf92b82c934b336c5fd0e0ecf68bd9ce56fc55b172a617edf9c252cd"},
+    {file = "django-modeltranslation-0.17.5.tar.gz", hash = "sha256:d9b3278dc3a799261861e090c27a3e1c46b3471e979e07b01cdd4ea2696a9f41"},
 ]
 django-picklefield = [
     {file = "django-picklefield-3.0.1.tar.gz", hash = "sha256:15ccba592ca953b9edf9532e64640329cd47b136b7f8f10f2939caa5f9ce4287"},

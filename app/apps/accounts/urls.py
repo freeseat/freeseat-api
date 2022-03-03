@@ -4,6 +4,8 @@ from django.urls import path
 app_name = "accounts"
 
 urlpatterns = [
-    path("user-sessions/", UserSessionCreateAPIView.as_view(), name="user-sessions"),
-    path("languages/", LanguageListAPIView.as_view(), name="languages"),
+    path(
+        "user-sessions/", UserSessionCreateAPIView.as_view(), name="user-sessions-list"
+    ),
+    path("languages/", LanguageListAPIView.as_view(), name="languages-list"),
 ]
