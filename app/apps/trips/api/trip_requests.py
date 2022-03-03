@@ -17,6 +17,15 @@ __all__ = ["TripRequestsAPIViewSet"]
 
 
 class TripRequestsFilter(filterset.FilterSet):
+    user_session = filters.ModelChoiceFilter(
+        method="filter_by_user_session",
+        label=_("user session"),
+        queryset=UserSession.objects.all(),
+    )
+
+    def filter_by_user_session(self, queryset, name, value):
+        return queryset
+
     spoken_languages = filters.BaseCSVFilter(
         method="filter_by_spoken_languages",
         label=_("spoken languages"),
@@ -47,6 +56,19 @@ class TripRequestsFilter(filterset.FilterSet):
 
 
 class TripRequestsAPIViewSet(viewsets.ModelViewSet):
+    """
+    Returns a list of requested trips.
+
+        This endpoint is used in 2 scenarios:
+
+        1. Retrieving a list of requested trips for user session.
+        In that case query parameter user_session should be passed.
+
+        2. Search through requested trips by other users.
+        In that case query parameter user_session should be omitted and
+        other parameters used for filtering instead.
+    """
+
     serializer_class = TripRequestPublicSerializer
     model = serializer_class.Meta.model
     pagination_class = PageNumberPagination
