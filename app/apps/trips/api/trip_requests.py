@@ -78,13 +78,19 @@ class TripRequestsAPIViewSet(viewsets.ModelViewSet):
     filter_class = TripRequestsFilter
 
     def get_queryset(self):
-        qs = self.model.objects.all()
+        now = timezone.now()
+        past_24_hours = now - timezone.timedelta(hours=24)
+
+        qs = self.model.objects.filter(
+            state=self.model.TripState.ACTIVE,
+            last_active_at__gte=past_24_hours,
+        )
 
         if self.request.user.is_authenticated:
             qs = qs.filter(created_by=self.request.user)
 
         elif user_session := self.request.query_params.get("user_session"):
-            user_session.last_active_at = timezone.now()
+            user_session.last_active_at = now
             user_session.save(update_fields=["last_active_at"])
 
             qs = qs.filter(user_session=user_session)
@@ -93,7 +99,7 @@ class TripRequestsAPIViewSet(viewsets.ModelViewSet):
             return qs
 
         if qs:
-            qs.update(last_active_at=timezone.now())
+            qs.update(last_active_at=now)
 
         return qs.prefetch_related("waypoints")
 
