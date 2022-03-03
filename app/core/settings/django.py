@@ -26,7 +26,7 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 DEBUG = os.getenv("DJANGO_DEBUG", default=False)
 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["freeseat.me"]
 
 
 # Application definition
