@@ -91,3 +91,16 @@ cd app
 ```shell
 docker-compose -f deployment/docker-compose.yml -p freeseat-api up --build --force-recreate -d
 ```
+
+
+## List of the environmental variables used in project:
+
+| Variable               | Default value      | Is required | Description                               |
+| ---------------------- |--------------------|:-----------:| ----------------------------------------- |
+| DJANGO_SECRET_KEY      |                    | Yes         |                                           |
+| DJANGO_DEBUG           | False              | No          |                                           |
+| POSTGRES_DB            | freeseat           | No          |                                           |
+| POSTGRES_HOST          | 127.0.0.1          | No          |                                           |
+| POSTGRES_PORT          | 5432               | No          |                                           |
+| POSTGRES_USER          |                    | Yes         |                                           |
+| POSTGRES_PASSWORD      |                    | Yes         |                                           |
