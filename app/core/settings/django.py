@@ -20,10 +20,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", default=False)
+DEBUG = os.getenv("DJANGO_DEBUG", default=False)
 
 
 ALLOWED_HOSTS = []
@@ -88,7 +88,7 @@ WSGI_APPLICATION = "core.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.contrib.gis.db.backends.postgis",
-        "NAME": os.getenv("POSTGRES_DB", default="django_template"),
+        "NAME": os.getenv("POSTGRES_DB", default="freeseat"),
         "HOST": os.getenv("POSTGRES_HOST", default="127.0.0.1"),
         "PORT": os.getenv("POSTGRES_PORT", default="5432"),
         "USER": os.getenv("POSTGRES_USER"),
