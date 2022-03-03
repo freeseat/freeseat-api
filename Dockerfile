@@ -11,12 +11,12 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 WORKDIR /app
-COPY poetry.lock pyproject.toml .
+COPY poetry.lock pyproject.toml ./
 
 RUN poetry config virtualenvs.create false && \
     poetry install --no-dev --no-interaction --no-ansi
 
-COPY app .
+COPY app ./
 
 RUN python manage.py collectstatic --noinput
 
