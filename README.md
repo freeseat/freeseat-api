@@ -106,3 +106,4 @@ docker-compose -f deployment/docker-compose.yml -p freeseat-api up --build --for
 | POSTGRES_PASSWORD      |                    |     Yes     |                                           |
 | DJANGO_SETTINGS_MODULE | core.settings_prod |     No      |                                           |
 | SENTRY_DSN             |                    |     Yes     |                                           |
+| NEW_RELIC_LICENSE_KEY  |                    |     Yes     |                                           |

@@ -16,7 +16,7 @@ class User(AbstractUser):
         editable=False,
     )
 
-    password = models.CharField(_("password"), max_length=128, editable=False)
+    password = models.CharField(_("password"), max_length=128)
     username = models.CharField(
         verbose_name=_("username"),
         max_length=150,
@@ -111,3 +111,8 @@ class User(AbstractUser):
         ordering = ("-date_joined",)
         verbose_name = _("user")
         verbose_name_plural = _("users")
+
+    def save(self, *args, **kwargs):
+        if not self.email:
+            self.email = None
+        super().save(*args, **kwargs)
