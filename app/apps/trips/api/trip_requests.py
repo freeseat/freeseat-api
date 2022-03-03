@@ -8,9 +8,9 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django_filters import fields, filters, filterset
 from django_filters.rest_framework import DjangoFilterBackend
+from packages.restframework.pagination import PageNumberPaginationWithPageCounter
 from rest_framework import viewsets
 from rest_framework.decorators import action
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
 __all__ = ["TripRequestsAPIViewSet"]
@@ -71,7 +71,7 @@ class TripRequestsAPIViewSet(viewsets.ModelViewSet):
 
     serializer_class = TripRequestPublicSerializer
     model = serializer_class.Meta.model
-    pagination_class = PageNumberPagination
+    pagination_class = PageNumberPaginationWithPageCounter
     filter_backends = [
         DjangoFilterBackend,
     ]
