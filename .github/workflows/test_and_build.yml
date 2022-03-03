@@ -39,3 +39,6 @@ jobs:
 #          flags: unittests # optional
 #          fail_ci_if_error: true # optional (default = false)
 #          verbose: true # optional (default = false)
+
+# https://github.com/TimDaub/hetzner-cloud-deploy-server-action
+# TODO: implement deployment to hetzner

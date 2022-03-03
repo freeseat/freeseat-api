@@ -84,3 +84,10 @@ cd app
 ```shell
 ./manage.py runserver
 ```
+
+
+### Running server in docker
+
+```shell
+docker-compose -f deployment/docker-compose.yml -p freeseat-api up --build --force-recreate -d
+```
