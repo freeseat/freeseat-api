@@ -1,4 +1,5 @@
 from apps.accounts.models import Language
+from apps.trips.models import TripRequest
 from django.urls import reverse
 from pytest_django.asserts import assertNumQueries
 
@@ -51,3 +52,9 @@ class TestTripRequestsCRUD:
         assert response.json().get("route_length") == route_length
         assert len(response.json().get("spoken_languages")) == len(spoken_languages)
         assert response.json().get("waypoints") == waypoints
+
+        trip_request = TripRequest.objects.get(id=response.json().get("id"))
+        assert response.json().get("number_of_people") == trip_request.number_of_people
+        assert response.json().get("with_pets") == trip_request.with_pets
+        assert response.json().get("luggage_size") == trip_request.luggage_size
+        assert response.json().get("comment") == trip_request.comment
