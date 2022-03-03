@@ -26,7 +26,7 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 DEBUG = os.getenv("DJANGO_DEBUG", default=False)
 
 
-ALLOWED_HOSTS = ["freeseat.me"]
+ALLOWED_HOSTS = ["127.0.0.1", "freeseat.me"]
 
 CSRF_TRUSTED_ORIGINS = ["https://freeseat.me"]
 

@@ -1,12 +1,13 @@
 from apps.accounts.models import User
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
 from simple_history.admin import SimpleHistoryAdmin
 
 __all__ = ["UserAdmin"]
 
 
 @admin.register(User)
-class UserAdmin(SimpleHistoryAdmin):
+class UserAdmin(SimpleHistoryAdmin, UserAdmin):
     list_display = (
         "id",
         "username",
@@ -19,6 +20,7 @@ class UserAdmin(SimpleHistoryAdmin):
     readonly_fields = ("id", "date_joined", "last_login", "registration_source")
     date_hierarchy = "date_joined"
     exclude = ("groups", "user_permissions")
+    fieldsets = ()
 
     def save_model(self, request, obj, form, change):
         if not change:
