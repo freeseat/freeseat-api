@@ -5,6 +5,6 @@ router = routers.DefaultRouter()
 
 app_name = "trips"
 
-router.register(r"requested-trips", TripRequestsAPIViewSet, basename="requested-trips")
+router.register(r"requested-trips", TripRequestsAPIViewSet, basename="trip-requests")
 
 urlpatterns = router.urls

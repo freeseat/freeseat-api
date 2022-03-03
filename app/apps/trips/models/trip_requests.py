@@ -99,10 +99,12 @@ class TripRequest(AbstractUUIDModel, GeoItem):
         verbose_name=_("comment"),
     )
 
+    route_length = models.FloatField(verbose_name=_("route_length"))
+
     class Meta:
         verbose_name = _("trip")
         verbose_name_plural = _("trips")
-        ordering = ("created_at",)
+        ordering = ("-route_length", "-created_at")
 
     @property
     def starting_point(self):

@@ -38,6 +38,7 @@ class TripRequestPublicSerializer(serializers.ModelSerializer):
             "comment",
             "luggage_size",
             "waypoints",
+            "route_length",
         ]
 
 
