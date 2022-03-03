@@ -22,4 +22,4 @@ RUN python manage.py collectstatic --noinput
 
 EXPOSE 8000
 
-ENTRYPOINT ["gunicorn", "-w 3", "core.wsgi:application", "--bind=0.0.0.0:8000"]
+ENTRYPOINT ["NEW_RELIC_CONFIG_FILE=newrelic.ini", "newrelic-admin", "run-program", "gunicorn", "-w 3", "core.wsgi:application", "--bind=0.0.0.0:8000"]

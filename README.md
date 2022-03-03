@@ -99,3 +99,4 @@ cd app
 | POSTGRES_PASSWORD      |                    |     Yes     |                                           |
 | DJANGO_SETTINGS_MODULE | core.settings_prod |     No      |                                           |
 | SENTRY_DSN             |                    |     Yes     |                                           |
+| NEW_RELIC_LICENSE_KEY  |                    |     Yes     |                                           |
