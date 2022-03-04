@@ -28,6 +28,7 @@ class TripRequestAdmin(
         "spoken_languages",
         "with_pets",
         "luggage_size",
+        "state",
     )
     filter_horizontal = ("spoken_languages",)
     readonly_fields = (
