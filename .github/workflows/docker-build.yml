@@ -2,8 +2,8 @@ name: Docker
 
 on:
   push:
-    # branches:
-    #   - master
+    branches:
+      - master
 
 env:
   IMAGE_NAME_BE: ghcr.io/freeseat/freeseat-api/be
