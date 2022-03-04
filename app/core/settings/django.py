@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "django.contrib.gis",
     "corsheaders",
     "rest_framework",
+    "rest_framework_gis",
     "django_admin_geomap",
     "django_filters",
     "simple_history",

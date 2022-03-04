@@ -9,7 +9,7 @@ from django.utils.translation import gettext_lazy as _
 from django_filters import fields, filters, filterset
 from django_filters.rest_framework import DjangoFilterBackend
 from packages.restframework.pagination import PageNumberPaginationWithPageCounter
-from rest_framework import viewsets
+from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -33,7 +33,7 @@ class TripRequestsFilter(filterset.FilterSet):
     )
 
     def filter_by_spoken_languages(self, queryset, name, value):
-        return queryset.filter(spoken_languages__code__in=value)
+        return queryset.filter(spoken_languages__code__in=value).distinct()
 
     number_of_people = filters.NumberFilter(
         label=_("number of people"),
@@ -81,6 +81,7 @@ class TripRequestsAPIViewSet(viewsets.ModelViewSet):
         DjangoFilterBackend,
     ]
     filter_class = TripRequestsFilter
+    permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
         now = timezone.now()
