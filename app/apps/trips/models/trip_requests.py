@@ -112,11 +112,11 @@ class TripRequest(AbstractUUIDModel, GeoItem):
 
     @property
     def geomap_longitude(self):
-        return self.starting_point.point.x if self.starting_point else None
+        return self.starting_point.point.y if self.starting_point else None
 
     @property
     def geomap_latitude(self):
-        return self.starting_point.point.y if self.starting_point else None
+        return self.starting_point.point.x if self.starting_point else None
 
     @property
     def geomap_icon(self):
