@@ -42,8 +42,13 @@ class TripRequestsFilter(filterset.FilterSet):
 
     luggage_size = filters.NumberFilter(
         label=_("luggage size"),
-        lookup_expr="lte",
+        method="filter_by_luggage_size",
     )
+
+    def filter_by_luggage_size(self, queryset, name, value):
+        if value == self.Meta.model.LuggageSize.CARGO:
+            return queryset.filter(luggage_size=value)
+        return queryset.filter(luggage_size__lte=value)
 
     class Meta:
         model = TripRequestPublicSerializer.Meta.model
