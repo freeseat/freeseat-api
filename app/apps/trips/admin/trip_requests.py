@@ -1,4 +1,3 @@
-from apps.trips.admin.waypoints import WayPointInline
 from apps.trips.models import TripRequest
 from django.contrib.gis import admin
 from django_admin_geomap import ModelAdmin as GeoMapModelAdmin
@@ -19,6 +18,7 @@ class TripRequestAdmin(
         "number_of_people",
         "with_pets",
         "luggage_size",
+        "allow_partial_trip",
         "state",
         "comment",
     )
@@ -29,6 +29,7 @@ class TripRequestAdmin(
         "with_pets",
         "luggage_size",
         "state",
+        "allow_partial_trip",
     )
     filter_horizontal = ("spoken_languages",)
     readonly_fields = (
@@ -36,12 +37,13 @@ class TripRequestAdmin(
         "created_by",
         "user_session",
     )
+    raw_id_fields = ("trip",)
+    inlines = []
     date_hierarchy = "last_active_at"
     geomap_default_longitude = "20"
     geomap_default_latitude = "50.05"
     geomap_default_zoom = "6"
     geomap_height = "750px"
-    inlines = [WayPointInline]
 
     def get_readonly_fields(self, request, obj=None):
         if not obj:
