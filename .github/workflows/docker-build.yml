@@ -2,11 +2,12 @@ name: Docker
 
 on:
   push:
-    branches:
-      - master
+    # branches:
+    #   - master
 
 env:
-  IMAGE_NAME: freeseat-api
+  IMAGE_NAME_BE: ghcr.io/freeseat/freeseat-api/be
+  IMAGE_NAME_FE: ghcr.io/freeseat/freeseat-api/fe
 
 jobs:
   push:
@@ -19,20 +20,16 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Build image
-        run: docker build . --file Dockerfile --tag $IMAGE_NAME
+      - name: Build be image
+        run: docker build . --file Dockerfile --target be --tag $IMAGE_NAME_BE
+
+      - name: Build fe image
+        run: docker build . --file Dockerfile --target fe --tag $IMAGE_NAME_FE
 
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-      - name: Push image
+      - name: Push images
         run: |
-          IMAGE_ID=ghcr.io/${{ github.repository }}
-          # Change all uppercase to lowercase
-          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-          VERSION=latest
-          echo IMAGE_ID=$IMAGE_ID
-          echo VERSION=$VERSION
-
-          docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
-          docker push $IMAGE_ID:$VERSION
+          docker push $IMAGE_NAME_BE:latest
+          docker push $IMAGE_NAME_FE:latest
