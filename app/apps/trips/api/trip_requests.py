@@ -32,6 +32,16 @@ class TripRequestsFilter(filterset.FilterSet):
         widget=fields.CSVWidget,
     )
 
+    with_pets = filters.BooleanFilter(
+        method="filter_by_pets",
+        label=_("with pets"),
+    )
+
+    def filter_by_pets(self, queryset, name, value):
+        if value:
+            return queryset
+        return queryset.exclude(with_pets=True)
+
     def filter_by_spoken_languages(self, queryset, name, value):
         return queryset.filter(spoken_languages__code__in=value).distinct()
 
