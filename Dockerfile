@@ -27,4 +27,4 @@ ENTRYPOINT ["NEW_RELIC_CONFIG_FILE=newrelic.ini", "newrelic-admin", "run-program
 FROM nginx:alpine as fe
 
 COPY --from=be /app/static /var/www/static
-COPY deployment/fe/nginx.conf
+COPY deployment/fe/nginx.conf /etc/nginx/conf.d/default.conf
