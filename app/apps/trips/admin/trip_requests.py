@@ -15,12 +15,14 @@ class TripRequestAdmin(
     list_display = (
         "id",
         "created_at",
-        "state",
+        "last_active_at",
         "number_of_people",
         "with_pets",
         "luggage_size",
-        "link_to_created_by",
+        "state",
+        "comment",
     )
+    list_editable = ("state",)
     search_fields = ("comment",)
     list_filter = (
         "spoken_languages",
@@ -33,7 +35,7 @@ class TripRequestAdmin(
         "created_by",
         "user_session",
     )
-    date_hierarchy = "created_at"
+    date_hierarchy = "last_active_at"
     geomap_default_longitude = "20"
     geomap_default_latitude = "50.05"
     geomap_default_zoom = "6"

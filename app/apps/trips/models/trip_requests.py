@@ -62,6 +62,7 @@ class TripRequest(AbstractUUIDModel, GeoItem):
         CANCELLED = "cancelled", _("cancelled")
         COMPLETED = "completed", _("completed")
         OUTDATED = "outdated", _("outdated")
+        INVALID = "invalid", _("invalid")
 
     state = models.CharField(
         max_length=32,
