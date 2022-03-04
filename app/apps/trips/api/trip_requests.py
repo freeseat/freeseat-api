@@ -33,7 +33,7 @@ class TripRequestsFilter(filterset.FilterSet):
     )
 
     def filter_by_spoken_languages(self, queryset, name, value):
-        return queryset.filter(spoken_languages__code__in=value)
+        return queryset.filter(spoken_languages__code__in=value).distinct()
 
     number_of_people = filters.NumberFilter(
         label=_("number of people"),
