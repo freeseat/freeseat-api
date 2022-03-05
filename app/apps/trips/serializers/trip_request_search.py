@@ -1,5 +1,5 @@
 from apps.trips.models import TripRequest
-from apps.trips.serializers import WayPointSerializer
+from apps.trips.serializers.waypoints import WayPointSerializer
 from rest_framework import serializers
 from rest_framework_gis.fields import GeometryField
 

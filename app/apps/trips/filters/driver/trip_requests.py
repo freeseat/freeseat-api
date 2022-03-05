@@ -1,4 +1,5 @@
 from apps.accounts.models import UserSession
+from apps.trips.enums import LuggageSize
 from apps.trips.models import TripRequest
 from django.utils.translation import gettext_lazy as _
 from django_filters import fields, filters, filterset
@@ -47,7 +48,7 @@ class TripRequestFilter(filterset.FilterSet):
     )
 
     def filter_by_luggage_size(self, queryset, name, value):
-        if value == self.Meta.model.LuggageSize.CARGO:
+        if value == LuggageSize.CARGO:
             return queryset.filter(luggage_size=value)
         return queryset.filter(luggage_size__lte=value)
 

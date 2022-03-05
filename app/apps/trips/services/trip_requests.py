@@ -1,4 +1,5 @@
 from apps.accounts.models import Language
+from apps.trips.enums import TripState
 from apps.trips.models import Trip, TripRequest, TripRequestSearchLog, WayPoint
 from django.db import transaction
 from django.utils import timezone
@@ -70,7 +71,7 @@ class TripRequestService:
 
     @classmethod
     def _change_trip_request_state(
-        cls, trip_request: TripRequest, to_state: TripRequest.TripRequestState
+        cls, trip_request: TripRequest, to_state: TripState
     ) -> TripRequest:
         trip_request.state = to_state
         trip_request.save(update_fields=["state"])
@@ -79,15 +80,11 @@ class TripRequestService:
 
     @classmethod
     def cancel_requested_trip(cls, trip_request: TripRequest) -> TripRequest:
-        return cls._change_trip_request_state(
-            trip_request, TripRequest.TripRequestState.CANCELLED
-        )
+        return cls._change_trip_request_state(trip_request, TripState.CANCELLED)
 
     @classmethod
     def complete_requested_trip(cls, trip_request: TripRequest) -> TripRequest:
-        return cls._change_trip_request_state(
-            trip_request, TripRequest.TripRequestState.COMPLETED
-        )
+        return cls._change_trip_request_state(trip_request, TripState.COMPLETED)
 
     @classmethod
     def log_trip_request_search(

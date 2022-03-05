@@ -6,27 +6,24 @@ from django.utils.translation import gettext_lazy as _
 from django_admin_geomap import GeoItem
 from packages.django.db.models import AbstractUUIDModel
 
-__all__ = ["TripRequest"]
+__all__ = ["TripProposal"]
 
 
-class TripRequestManager(models.Manager):
+class TripProposalManager(models.Manager):
     def active(self):
-        now = timezone.now()
-        past_24_hours = now - timezone.timedelta(hours=24)
-
         return self.model.objects.filter(
             state=TripState.ACTIVE,
-            last_active_at__gte=past_24_hours,
+            departure_time__gte=timezone.now(),
         )
 
 
-class TripRequest(AbstractUUIDModel, GeoItem):
-    objects = TripRequestManager()
+class TripProposal(AbstractUUIDModel, GeoItem):
+    objects = TripProposalManager()
 
     created_by = models.ForeignKey(
         verbose_name=_("created by"),
         to="accounts.User",
-        related_name="created_trip_requests",
+        related_name="created_trip_proposals",
         on_delete=models.CASCADE,
         db_index=True,
         editable=False,
@@ -37,7 +34,7 @@ class TripRequest(AbstractUUIDModel, GeoItem):
     user_session = models.ForeignKey(
         verbose_name=_("user session"),
         to="accounts.UserSession",
-        related_name="created_trip_requests",
+        related_name="created_trip_proposals",
         on_delete=models.CASCADE,
         db_index=True,
         null=True,
@@ -58,10 +55,8 @@ class TripRequest(AbstractUUIDModel, GeoItem):
         db_index=True,
     )
 
-    last_active_at = models.DateTimeField(
-        verbose_name=_("last active at"),
-        auto_now=True,
-        editable=False,
+    departure_time = models.DateTimeField(
+        verbose_name=_("start time"),
         db_index=True,
     )
 
@@ -79,20 +74,20 @@ class TripRequest(AbstractUUIDModel, GeoItem):
         db_index=True,
     )
 
-    number_of_people = models.PositiveSmallIntegerField(
-        verbose_name=_("number of people"),
-        default=1,
+    number_of_seats = models.PositiveSmallIntegerField(
+        verbose_name=_("number of seats"),
+        default=4,
         db_index=True,
     )
 
-    with_pets = models.BooleanField(
-        verbose_name=_("with pets"),
+    pets_allowed = models.BooleanField(
+        verbose_name=_("pets allowed"),
         default=False,
         db_index=True,
     )
 
-    luggage_size = models.PositiveSmallIntegerField(
-        verbose_name=_("luggage size"),
+    luggage_carrier_size = models.PositiveSmallIntegerField(
+        verbose_name=_("luggage carrier size"),
         default=LuggageSize.SMALL_BAGS,
         choices=LuggageSize.choices,
         db_index=True,
@@ -102,17 +97,18 @@ class TripRequest(AbstractUUIDModel, GeoItem):
         verbose_name=_("comment"),
     )
 
-    allow_partial_trip = models.BooleanField(
-        verbose_name=_("allow partial trip"),
-        default=False,
-        db_index=True,
+    contact_information = models.OneToOneField(
+        verbose_name=_("contact information"),
+        to="accounts.ContactInformation",
+        related_name="+",
+        on_delete=models.CASCADE,
     )
 
     trip = models.OneToOneField(
         verbose_name=_("trip"),
         to="trips.Trip",
         on_delete=models.CASCADE,
-        related_name="trip_request",
+        related_name="trip_proposal",
         null=True,
         db_index=True,
     )
@@ -126,9 +122,9 @@ class TripRequest(AbstractUUIDModel, GeoItem):
     )
 
     class Meta:
-        verbose_name = _("trip request")
-        verbose_name_plural = _("trip requests")
-        ordering = ("-trip__route_length", "-created_at")
+        verbose_name = _("trip proposal")
+        verbose_name_plural = _("trip proposals")
+        ordering = ("departure_time",)
 
     @property
     def geomap_longitude(self):
