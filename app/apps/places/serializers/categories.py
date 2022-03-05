@@ -13,11 +13,4 @@ class POICategorySerializer(serializers.ModelSerializer):
             "name_ru",
             "name_uk",
             "name_pl",
-            "description_en",
-            "description_ru",
-            "description_uk",
-            "description_pl",
-            "path",
-            "depth",
-            "numchild",
         ]
