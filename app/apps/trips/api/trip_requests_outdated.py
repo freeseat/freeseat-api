@@ -96,7 +96,7 @@ class TripRequestOutdatedAPIViewSet(viewsets.ModelViewSet):
         past_24_hours = now - timezone.timedelta(hours=24)
 
         qs = self.model.objects.filter(
-            state=self.model.TripState.ACTIVE,
+            state=self.model.TripRequestState.ACTIVE,
             last_active_at__gte=past_24_hours,
         )
 
