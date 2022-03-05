@@ -106,7 +106,7 @@ class TripRequestAPIViewSet(viewsets.ModelViewSet):
             return qs
 
         if qs:
-            qs.update(last_active_at=now)
+            TripRequestService.actualize_trip_requests_list(qs)
 
         return qs.prefetch_related("trip__waypoints")
 

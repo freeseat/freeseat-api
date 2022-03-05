@@ -1,5 +1,6 @@
 from apps.trips.models import Trip, TripRequest, WayPoint
 from django.db import transaction
+from django.utils import timezone
 
 __all__ = ["TripRequestService"]
 
@@ -59,6 +60,14 @@ class TripRequestService:
         trip_request.refresh_from_db()
 
         return trip_request
+
+    @classmethod
+    @transaction.atomic
+    def actualize_trip_requests_list(
+        cls, trip_requests: TripRequest.objects, data: dict
+    ):
+        now = timezone.now()
+        trip_requests.update(last_active_at=now)
 
     @classmethod
     def _change_trip_request_state(
