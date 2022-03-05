@@ -1,8 +1,7 @@
 from apps.accounts.models import UserSession
-from apps.trips.models import Trip, TripRequest
+from apps.trips.models import TripRequest
 from apps.trips.serializers.waypoints import WayPointSerializer
 from django.contrib.gis.geos import Point
-from django.db import transaction
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.validators import ValidationError
@@ -27,6 +26,13 @@ class TripRequestPublicSerializer(serializers.ModelSerializer):
                     "waypoints": [_("This list should contain at least 2 points.")],
                 }
             )
+
+        # TODO: drop after switch
+        for i, wp in enumerate(waypoints):
+            coords = wp.get("point").get("coords")
+            point = Point(*coords)
+            waypoints[i]["point"] = point
+
         return waypoints
 
     class Meta:
@@ -53,33 +59,6 @@ class TripRequestPrivateSerializer(TripRequestPublicSerializer):
     class Meta(TripRequestPublicSerializer.Meta):
         fields = TripRequestPublicSerializer.Meta.fields + ["id"]
 
-    @transaction.atomic
-    def update(self, instance, validated_data):
-        trip_data = validated_data.pop("trip")
-        waypoints = trip_data.pop("waypoints")
-
-        trip = instance.trip
-
-        Trip.objects.filter(id=trip.id).update(**trip_data)
-
-        trip.waypoints.all().delete()
-
-        for waypoint in waypoints:
-            WayPointSerializer.Meta.model.objects.create(
-                trip=trip,
-                order=waypoint.get("order"),
-                point=Point(
-                    *waypoint.get("point").get("coords"),
-                ),
-            )
-
-        validated_data["starting_point"] = trip.waypoints.first().point
-
-        trip_request = super().update(instance, validated_data)
-
-        trip_request.refresh_from_db()
-        return trip_request
-
 
 class TripRequestCreateSerializer(TripRequestPrivateSerializer):
     user_session = serializers.PrimaryKeyRelatedField(
@@ -97,26 +76,3 @@ class TripRequestCreateSerializer(TripRequestPrivateSerializer):
 
     class Meta(TripRequestPrivateSerializer.Meta):
         fields = TripRequestPrivateSerializer.Meta.fields + ["user_session"]
-
-    @transaction.atomic
-    def create(self, validated_data):
-        trip_data = validated_data.pop("trip")
-        waypoints = trip_data.pop("waypoints")
-
-        trip = Trip.objects.create(**trip_data)
-
-        for waypoint in waypoints:
-            WayPointSerializer.Meta.model.objects.create(
-                trip=trip,
-                order=waypoint.get("order"),
-                point=Point(
-                    *waypoint.get("point").get("coords"),
-                ),
-            )
-
-        validated_data["trip"] = trip
-        validated_data["starting_point"] = trip.waypoints.first().point
-
-        trip_request = super().create(validated_data)
-
-        return trip_request
