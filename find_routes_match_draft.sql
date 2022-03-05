@@ -1,12 +1,12 @@
-DROP TABLE driver_route;
-CREATE TABLE driver_route
+DROP TABLE trip_route;
+CREATE TABLE trip_route
 (
     name                 VARCHAR,
     max_deviation_meters REAL,
     route                geometry(LineString, 4326)
 );
 
-INSERT INTO driver_route(name, max_deviation_meters, route)
+INSERT INTO trip_route(name, max_deviation_meters, route)
 VALUES ('1', 5000,
         ST_GeomFromGeoJSON('{"type":"LineString","coordinates":[[23.4942626953125,51.13455469147683],[22.56591796875,51.25847731518399],[21.851806640625,51.570241445811234],[21.000366210937496,52.2378923494213],[20.36865234375,53.12040528310657]]}')),
        ('2', 5000,
@@ -19,48 +19,48 @@ WITH
         SELECT st_geomfromgeojson('{"type":"LineString","coordinates":[[23.48876953125,51.13110763758015],[22.049560546875,52.328625488430184],[20.302734375,53.00817326643286],[19.40185546875,53.25206880589411],[19.40185546875,54.15600109028491]]}') AS route
     ),
     closest_point_fractions                AS (
-        SELECT driver_route.name                                                         AS driver_name,
-               driver_route.route                                                        AS driver_route,
-               driver_route.max_deviation_meters                                         AS driver_max_deviation_meters,
+        SELECT trip_route.name                                                         AS trip_name,
+               trip_route.route                                                        AS trip_route,
+               trip_route.max_deviation_meters                                         AS trip_max_deviation_meters,
                query_routes.route                                                        AS query_route,
-               ST_LineLocatePoint(driver_route.route, st_startpoint(query_routes.route)) AS closest_point_fraction
+               ST_LineLocatePoint(trip_route.route, st_startpoint(query_routes.route)) AS closest_point_fraction
         FROM query_routes
-             LEFT JOIN driver_route
+             LEFT JOIN trip_route
              ON TRUE
     ),
-    driver_effective_routes                AS (
-        SELECT driver_name,
-               ST_LineSubstring(driver_route, closest_point_fraction, 1) AS driver_route,
-               driver_max_deviation_meters,
+    trip_effective_routes                AS (
+        SELECT trip_name,
+               ST_LineSubstring(trip_route, closest_point_fraction, 1) AS trip_route,
+               trip_max_deviation_meters,
                query_route
         FROM closest_point_fractions
         WHERE st_distance(
                       st_startpoint(query_route)::geography,
-                      ST_LineInterpolatePoint(driver_route, closest_point_fraction)::geography
-                  ) < driver_max_deviation_meters
+                      ST_LineInterpolatePoint(trip_route, closest_point_fraction)::geography
+                  ) < trip_max_deviation_meters
     ),
-    driver_expanded_routes                 AS (
-        SELECT driver_name,
-               driver_route,
+    trip_expanded_routes                 AS (
+        SELECT trip_name,
+               trip_route,
                st_buffer(
-                       driver_route::geography,
-                       driver_max_deviation_meters,
+                       trip_route::geography,
+                       trip_max_deviation_meters,
                        'endcap=flat join=round'
-                   )::geometry AS driver_route_polygon,
+                   )::geometry AS trip_route_polygon,
                query_route
-        FROM driver_effective_routes
+        FROM trip_effective_routes
     ),
     common_routes                          AS (
-        SELECT driver_name,
+        SELECT trip_name,
                query_route,
-               driver_route_polygon,
-               st_intersection(driver_route_polygon, query_route) AS common_route
-        FROM driver_expanded_routes
+               trip_route_polygon,
+               st_intersection(trip_route_polygon, query_route) AS common_route
+        FROM trip_expanded_routes
     ),
     common_routes_furthest_points          AS (
-        SELECT driver_name,
+        SELECT trip_name,
                query_route,
-               driver_route_polygon,
+               trip_route_polygon,
                common_route,
                st_endpoint(
                        st_geometryn(
@@ -70,7 +70,7 @@ WITH
         FROM common_routes
     ),
     common_routes_furthest_point_fractions AS (
-        SELECT driver_name,
+        SELECT trip_name,
                ST_LineLocatePoint(query_route, furthest_point) AS furthest_point_fraction
         FROM common_routes_furthest_points
     )
