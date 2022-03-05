@@ -63,9 +63,7 @@ class TripRequestService:
 
     @classmethod
     @transaction.atomic
-    def actualize_trip_requests_list(
-        cls, trip_requests: TripRequest.objects, data: dict
-    ):
+    def actualize_trip_requests_list(cls, trip_requests: TripRequest.objects):
         now = timezone.now()
         trip_requests.update(last_active_at=now)
 
