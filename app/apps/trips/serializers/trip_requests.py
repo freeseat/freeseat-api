@@ -19,7 +19,6 @@ class TripRequestPublicSerializer(serializers.ModelSerializer):
     waypoints = WayPointSerializer(source="trip.waypoints", many=True, allow_null=True)
     route_length = serializers.FloatField(source="trip.route_length", allow_null=True)
     route = GeometryField(source="trip.route", allow_null=True)
-    starting_point = GeometryField(read_only=True)
 
     def validate_waypoints(self, waypoints):
         if len(waypoints) < 2:
@@ -34,6 +33,7 @@ class TripRequestPublicSerializer(serializers.ModelSerializer):
         model = TripRequest
         read_only_fields = [
             "last_active_at",
+            "starting_point",
         ]
         fields = read_only_fields + [
             "spoken_languages",

@@ -5,9 +5,8 @@ __all__ = ["WayPointSerializer"]
 
 
 class WayPointSerializer(serializers.ModelSerializer):
+    # TODO: remove this specification
     point = serializers.ListField(source="point.coords")
-    # TODO: update to geometry field
-    # point = GeometryField()
 
     class Meta:
         model = WayPoint

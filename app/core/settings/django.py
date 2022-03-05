@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.gis",
     "corsheaders",
+    "treebeard",
     "rest_framework",
     "rest_framework_gis",
     "django_admin_geomap",
@@ -55,6 +56,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "apps.accounts",
     "apps.articles",
+    "apps.places",
     "apps.trips",
 ]
 
