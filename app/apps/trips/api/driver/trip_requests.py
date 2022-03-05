@@ -1,5 +1,6 @@
 from apps.trips.filters import TripRequestFilter
 from apps.trips.serializers import TripRequestListSerializer
+from apps.trips.services import TripRequestService
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
 from django_filters.rest_framework import DjangoFilterBackend
@@ -34,9 +35,16 @@ class DriverTripRequestAPIViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         qs = self.model.objects.active()
 
+        return qs.prefetch_related("trip__waypoints")
+
+    def filter_queryset(self, qs):
+
         lon = self.request.query_params.get("lon")
         lat = self.request.query_params.get("lat")
         radius = self.request.query_params.get("radius")
+
+        location = None
+        area = None
 
         if lon and lat:
             location = Point(float(lon), float(lat), srid=4326)
@@ -48,4 +56,18 @@ class DriverTripRequestAPIViewSet(viewsets.ReadOnlyModelViewSet):
                 area = with_metric_buffer(location, int(radius) * 1000, map_srid=4326)
                 qs = qs.filter(starting_point__coveredby=area)
 
-        return qs.prefetch_related("trip__waypoints")
+        qs = super().filter_queryset(qs)
+
+        TripRequestService.log_trip_request_search(
+            user_session=self.request.query_params.get("user_session"),
+            point=location,
+            area=area,
+            radius=radius,
+            number_of_people=self.request.query_params.get("number_of_people"),
+            with_pets=self.request.query_params.get("with_pets"),
+            luggage_size=self.request.query_params.get("luggage_size"),
+            spoken_languages=self.request.query_params.get("spoken_languages"),
+            results=qs,
+        )
+
+        return qs

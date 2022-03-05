@@ -1,3 +1,4 @@
+from apps.accounts.models import UserSession
 from apps.trips.models import TripRequest
 from django.utils.translation import gettext_lazy as _
 from django_filters import fields, filters, filterset
@@ -6,6 +7,16 @@ __all__ = ["TripRequestFilter"]
 
 
 class TripRequestFilter(filterset.FilterSet):
+    user_session = filters.ModelChoiceFilter(
+        label=_("user session"),
+        method="filter_by_user_session",
+        queryset=UserSession.objects.all(),
+    )
+
+    def filter_by_user_session(self, queryset, name, value):
+        """This parameter is only used for logging purposes."""
+        return queryset
+
     spoken_languages = filters.BaseCSVFilter(
         method="filter_by_spoken_languages",
         label=_("spoken languages"),
@@ -65,6 +76,15 @@ class TripRequestFilter(filterset.FilterSet):
 
     def filter_by_radius(self, queryset, name, value):
         """Filtering is happening in APIViewSet's get_queryset method."""
+        return queryset
+
+    page_size = filters.NumberFilter(
+        label=_("page size"),
+        method="filter_by_page_size",
+    )
+
+    def filter_by_page_size(self, queryset, name, value):
+        """Filtering is happening in PageNumberPaginationWithPageCounter."""
         return queryset
 
     class Meta:

@@ -1,4 +1,5 @@
-from apps.trips.models import Trip, TripRequest, WayPoint
+from apps.accounts.models import Language
+from apps.trips.models import Trip, TripRequest, TripRequestSearchLog, WayPoint
 from django.db import transaction
 from django.utils import timezone
 
@@ -87,3 +88,55 @@ class TripRequestService:
         return cls._change_trip_request_state(
             trip_request, TripRequest.TripRequestState.COMPLETED
         )
+
+    @classmethod
+    def log_trip_request_search(
+        cls,
+        user_session=None,
+        point=None,
+        area=None,
+        radius=None,
+        number_of_people=None,
+        with_pets=None,
+        luggage_size=None,
+        spoken_languages=None,
+        results=None,
+    ):
+        if with_pets == "true":
+            with_pets = True
+        elif with_pets == "false":
+            with_pets = False
+        elif with_pets == "unknown":
+            with_pets = None
+
+        if not user_session:
+            user_session = None
+
+        if not number_of_people:
+            number_of_people = None
+
+        if not luggage_size:
+            luggage_size = None
+
+        try:
+            trip_request_search_log = TripRequestSearchLog.objects.create(
+                user_session=user_session,
+                point=point,
+                radius=radius,
+                area=area,
+                number_of_people=number_of_people,
+                with_pets=with_pets,
+                luggage_size=luggage_size,
+                number_of_results=results.count(),
+            )
+
+            if spoken_languages:
+                spoken_languages = spoken_languages.split(",")
+                languages = Language.objects.filter(code__in=spoken_languages)
+                trip_request_search_log.spoken_languages.set(languages)
+
+            if results:
+                trip_request_search_log.results.set(results)
+
+        except ValueError:
+            pass
