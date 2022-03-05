@@ -6,8 +6,10 @@ router = routers.DefaultRouter()
 app_name = "trips"
 
 router.register(r"requested-trips", TripRequestAPIViewSet, basename="trip-requests")
+router.register(r"driver/requested-trips", TripRequestAPIViewSet, basename="driver-trip-requests")
+router.register(r"passenger/requested-trips", TripRequestAPIViewSet, basename="passenger-trip-requests")
 router.register(
-    r"passengers/starting-points",
+    r"passenger/starting-points",
     TripRequestStartingPointViewSet,
     basename="passenger-starting-points",
 )
