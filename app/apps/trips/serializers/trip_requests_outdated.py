@@ -1,7 +1,7 @@
 # TODO: DROP FILE
 
 from apps.accounts.models import UserSession
-from apps.trips.models import TripRequest, WayPoint
+from apps.trips.models import Trip, TripRequest, WayPoint
 from django.contrib.gis.geos import Point
 from django.db import transaction
 from django.utils.translation import gettext_lazy as _
@@ -24,7 +24,8 @@ class WayPointSerializer(serializers.ModelSerializer):
 
 
 class TripRequestPublicSerializer(serializers.ModelSerializer):
-    waypoints = WayPointSerializer(many=True)
+    waypoints = WayPointSerializer(source="trip.waypoints", many=True)
+    route_length = serializers.FloatField(source="trip.route_length")
 
     def validate_waypoints(self, waypoints):
         if len(waypoints) < 2:
@@ -57,21 +58,32 @@ class TripRequestPrivateSerializer(TripRequestPublicSerializer):
 
     @transaction.atomic
     def update(self, instance, validated_data):
-        waypoints = validated_data.pop("waypoints", None)
+        trip_data = validated_data.pop("trip")
+        waypoints = trip_data.pop("waypoints")
+        spoken_languages = validated_data.pop("spoken_languages")
+
+        trip = instance.trip
+
+        Trip.objects.filter(id=trip.id).update(**trip_data)
+
+        trip.waypoints.all().delete()
+
+        for waypoint in waypoints:
+            WayPoint.objects.create(
+                trip=trip,
+                order=waypoint.get("order"),
+                point=Point(
+                    *waypoint.get("point").get("coords"),
+                ),
+            )
+
+        validated_data["starting_point"] = trip.waypoints.first().point
 
         trip_request = super().update(instance, validated_data)
 
-        if waypoints:
-            trip_request.waypoints.all().delete()
+        trip_request.spoken_languages.set(spoken_languages)
 
-            for waypoint in waypoints:
-                WayPointSerializer.Meta.model.objects.create(
-                    trip_request=trip_request,
-                    order=waypoint.get("order"),
-                    point=Point(
-                        *waypoint.get("point").get("coords"),
-                    ),
-                )
+        trip_request.refresh_from_db()
 
         return trip_request
 
@@ -95,17 +107,25 @@ class TripRequestCreateSerializer(TripRequestPrivateSerializer):
 
     @transaction.atomic
     def create(self, validated_data):
-        waypoints = validated_data.pop("waypoints")
+        trip_data = validated_data.pop("trip")
+        waypoints = trip_data.pop("waypoints")
+        spoken_languages = validated_data.pop("spoken_languages")
 
-        trip_request = super().create(validated_data)
+        trip = Trip.objects.create(**trip_data)
 
         for waypoint in waypoints:
-            WayPointSerializer.Meta.model.objects.create(
-                trip_request=trip_request,
+            WayPoint.objects.create(
+                trip=trip,
                 order=waypoint.get("order"),
                 point=Point(
                     *waypoint.get("point").get("coords"),
                 ),
             )
+
+        validated_data["trip"] = trip
+        validated_data["starting_point"] = trip.waypoints.first().point
+
+        trip_request = TripRequest.objects.create(**validated_data)
+        trip_request.spoken_languages.set(spoken_languages)
 
         return trip_request

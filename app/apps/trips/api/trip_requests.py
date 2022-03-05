@@ -185,7 +185,7 @@ class TripRequestAPIViewSet(viewsets.ModelViewSet):
         if qs:
             qs.update(last_active_at=now)
 
-        return qs.prefetch_related("waypoints")
+        return qs.prefetch_related("trip__waypoints")
 
     def get_serializer_class(self):
         if self.action == "create":
