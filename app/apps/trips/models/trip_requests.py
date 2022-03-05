@@ -3,13 +3,12 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django_admin_geomap import GeoItem
-from modeltranslation.manager import MultilingualManager
 from packages.django.db.models import AbstractUUIDModel
 
 __all__ = ["TripRequest"]
 
 
-class TripRequestManager(MultilingualManager):
+class TripRequestManager(models.Manager):
     def active(self):
         now = timezone.now()
         past_24_hours = now - timezone.timedelta(hours=24)
