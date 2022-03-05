@@ -4,10 +4,10 @@ from django.utils.translation import gettext_lazy as _
 from django_admin_geomap import GeoItem
 from packages.django.db import AbstractUUIDModel
 
-__all__ = ["Place"]
+__all__ = ["PointOfInterest"]
 
 
-class Place(AbstractUUIDModel, GeoItem):
+class PointOfInterest(AbstractUUIDModel, GeoItem):
     created_at = models.DateTimeField(
         verbose_name=_("created at"), auto_now_add=True, editable=False, db_index=True
     )
@@ -41,7 +41,7 @@ class Place(AbstractUUIDModel, GeoItem):
 
     category = models.ForeignKey(
         verbose_name=_("category"),
-        to="places.PlaceCategory",
+        to="places.POICategory",
         related_name="places",
         on_delete=models.PROTECT,
         db_index=True,
@@ -50,8 +50,8 @@ class Place(AbstractUUIDModel, GeoItem):
 
     class Meta:
         ordering = ("-created_at",)
-        verbose_name = _("place")
-        verbose_name_plural = _("places")
+        verbose_name = _("point of interest")
+        verbose_name_plural = _("points of interest")
 
     def __str__(self):
         return self.name

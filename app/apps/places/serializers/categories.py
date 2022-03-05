@@ -1,12 +1,12 @@
-from apps.places.models import PlaceCategory
+from apps.places.models import POICategory
 from rest_framework import serializers
 
-__all__ = ["PlaceCategorySerializer"]
+__all__ = ["POICategorySerializer"]
 
 
-class PlaceCategorySerializer(serializers.ModelSerializer):
+class POICategorySerializer(serializers.ModelSerializer):
     class Meta:
-        model = PlaceCategory
+        model = POICategory
         fields = [
             "id",
             "name_en",

@@ -1,7 +1,6 @@
 from apps.accounts.models import UserSession
 from apps.trips.models import TripRequest
 from apps.trips.serializers.waypoints import WayPointSerializer
-from django.contrib.gis.geos import Point
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.validators import ValidationError
@@ -18,6 +17,9 @@ class TripRequestPublicSerializer(serializers.ModelSerializer):
     waypoints = WayPointSerializer(source="trip.waypoints", many=True, allow_null=True)
     route_length = serializers.FloatField(source="trip.route_length", allow_null=True)
     route = GeometryField(source="trip.route", allow_null=True)
+    distance_in_km = serializers.FloatField(
+        source="distance.km", read_only=True, default=None
+    )
 
     def validate_waypoints(self, waypoints):
         if len(waypoints) < 2:
@@ -27,12 +29,6 @@ class TripRequestPublicSerializer(serializers.ModelSerializer):
                 }
             )
 
-        # TODO: drop after switch
-        for i, wp in enumerate(waypoints):
-            coords = wp.get("point").get("coords")
-            point = Point(*coords)
-            waypoints[i]["point"] = point
-
         return waypoints
 
     class Meta:
@@ -40,6 +36,7 @@ class TripRequestPublicSerializer(serializers.ModelSerializer):
         read_only_fields = [
             "last_active_at",
             "starting_point",
+            "distance_in_km",
         ]
         fields = read_only_fields + [
             "spoken_languages",

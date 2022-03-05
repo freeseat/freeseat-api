@@ -3,10 +3,10 @@ from django.utils.translation import gettext_lazy as _
 from packages.django.db.models import AbstractUUIDModel
 from treebeard.mp_tree import MP_Node
 
-__all__ = ["PlaceCategory"]
+__all__ = ["POICategory"]
 
 
-class PlaceCategory(AbstractUUIDModel, MP_Node):
+class POICategory(AbstractUUIDModel, MP_Node):
     created_at = models.DateTimeField(
         verbose_name=_("created at"), auto_now_add=True, editable=False, db_index=True
     )

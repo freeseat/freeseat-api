@@ -17,8 +17,7 @@ def create_trips_for_trip_requests_fwd(apps, schema_editor):
                 route_length=trip_request.route_length,
             )
             trip_request.trip = trip
-            trip_request.route_length = None
-            trip_request.save(update_fields=["trip", "route_length"])
+            trip_request.save(update_fields=["trip"])
 
     for waypoint in Waypoint.objects.all():
         if waypoint.trip_request:
@@ -38,10 +37,9 @@ def create_trips_for_trip_requests_bwd(apps, schema_editor):
             trip_request.save(update_fields=["trip", "route_length"])
 
             for waypoint in trip.waypoints.all():
-                if trip := waypoint.trip:
-                    waypoint.trip_request = trip_request
-                    waypoint.trip = None
-                    waypoint.save(update_fields=["trip", "trip_request"])
+                waypoint.trip_request = trip_request
+                waypoint.trip = None
+                waypoint.save(update_fields=["trip", "trip_request"])
 
             trip.delete()
 
