@@ -71,12 +71,8 @@ class TripRequestAPIViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         now = timezone.now()
-        past_24_hours = now - timezone.timedelta(hours=24)
 
-        qs = self.model.objects.filter(
-            state=self.model.TripRequestState.ACTIVE,
-            last_active_at__gte=past_24_hours,
-        )
+        qs = self.model.objects.active()
 
         if self.request.user.is_authenticated:
             qs = qs.filter(created_by=self.request.user)

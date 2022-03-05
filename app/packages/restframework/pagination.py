@@ -21,3 +21,8 @@ class PageNumberPaginationWithPageCounter(pagination.PageNumberPagination):
                 ]
             )
         )
+
+    def paginate_queryset(self, queryset, request, view=None):
+        if request.query_params.get("disable_pagination") == "true":
+            return None
+        return super().paginate_queryset(queryset, request, view)

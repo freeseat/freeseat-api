@@ -1,13 +1,28 @@
 from django.contrib.gis.db import models
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django_admin_geomap import GeoItem
+from modeltranslation.manager import MultilingualManager
 from packages.django.db.models import AbstractUUIDModel
 
 __all__ = ["TripRequest"]
 
 
+class TripRequestManager(MultilingualManager):
+    def active(self):
+        now = timezone.now()
+        past_24_hours = now - timezone.timedelta(hours=24)
+
+        return self.model.objects.filter(
+            state=self.model.TripRequestState.ACTIVE,
+            last_active_at__gte=past_24_hours,
+        )
+
+
 class TripRequest(AbstractUUIDModel, GeoItem):
+    objects = TripRequestManager()
+
     created_by = models.ForeignKey(
         verbose_name=_("created by"),
         to="accounts.User",
