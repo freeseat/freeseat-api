@@ -15,14 +15,14 @@ router.register(
     basename="driver-trip-requests",
 )
 router.register(
+    r"driver/passenger-starting-points",
+    TripRequestStartingPointViewSet,
+    basename="passenger-starting-points",
+)
+router.register(
     r"passenger/requested-trips",
     PassengerTripRequestAPIViewSet,
     basename="passenger-trip-requests",
-)
-router.register(
-    r"passenger/starting-points",
-    TripRequestStartingPointViewSet,
-    basename="passenger-starting-points",
 )
 
 urlpatterns = router.urls

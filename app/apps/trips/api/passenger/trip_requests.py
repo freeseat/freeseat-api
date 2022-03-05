@@ -2,19 +2,22 @@ from apps.accounts.models import UserSession
 from apps.trips.serializers import (
     TripRequestCreateSerializer,
     TripRequestListSerializer,
+    TripRequestStateChangeSerializer,
 )
 from apps.trips.services import TripRequestService
 from django.db import transaction
 from django.utils import timezone
 from packages.restframework.pagination import PageNumberPaginationWithPageCounter
-from rest_framework import permissions, status, viewsets
+from rest_framework import mixins, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 __all__ = ["PassengerTripRequestAPIViewSet"]
 
 
-class PassengerTripRequestAPIViewSet(viewsets.ModelViewSet):
+class PassengerTripRequestAPIViewSet(
+    mixins.CreateModelMixin, viewsets.ReadOnlyModelViewSet
+):
     """
     Returns a list of requested trips.
     Note: a query parameter user_session should be passed.
@@ -26,9 +29,11 @@ class PassengerTripRequestAPIViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]
 
     def get_serializer_class(self):
-        if self.action == "create":
-            return TripRequestCreateSerializer
-        return super().get_serializer_class()
+        return {
+            "create": TripRequestCreateSerializer,
+            "cancel_trip_request": TripRequestStateChangeSerializer,
+            "complete_trip_request": TripRequestStateChangeSerializer,
+        }.get(self.action, TripRequestCreateSerializer)
 
     def get_queryset(self):
         now = timezone.now()
@@ -85,12 +90,24 @@ class PassengerTripRequestAPIViewSet(viewsets.ModelViewSet):
             serializer.data, status=status.HTTP_201_CREATED, headers=headers
         )
 
-    def perform_destroy(self, instance):
+    @transaction.atomic
+    @action(detail=True, methods=["post"], url_path="cancel")
+    def cancel_trip_request(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data)
+        serializer.is_valid(raise_exception=True)
+
         TripRequestService.cancel_requested_trip(instance)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @transaction.atomic
     @action(detail=True, methods=["post"], url_path="complete")
     def complete_trip_request(self, request, *args, **kwargs):
         instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data)
+        serializer.is_valid(raise_exception=True)
+
         TripRequestService.cancel_requested_trip(instance)
+
         return Response(status=status.HTTP_204_NO_CONTENT)

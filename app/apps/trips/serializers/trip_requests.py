@@ -3,12 +3,14 @@ from apps.trips.models import TripRequest
 from apps.trips.serializers.waypoints import WayPointSerializer
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.validators import ValidationError
 from rest_framework_gis.fields import GeometryField
 
 __all__ = [
     "TripRequestListSerializer",
     "TripRequestCreateSerializer",
+    "TripRequestStateChangeSerializer",
 ]
 
 
@@ -66,3 +68,16 @@ class TripRequestCreateSerializer(TripRequestListSerializer):
 
     class Meta(TripRequestListSerializer.Meta):
         fields = TripRequestListSerializer.Meta.fields + ["user_session"]
+
+
+class TripRequestStateChangeSerializer(serializers.ModelSerializer):
+    def validate_user_session(self, user_session):
+        if self.instance.user_session != user_session:
+            raise PermissionDenied
+        return user_session
+
+    class Meta:
+        model = TripRequest
+        fields = [
+            "user_session",
+        ]

@@ -41,7 +41,6 @@ class TripRequest(AbstractUUIDModel, GeoItem):
         db_index=True,
         null=True,
         blank=True,
-        editable=False,
     )
 
     created_at = models.DateTimeField(
