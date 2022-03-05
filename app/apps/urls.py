@@ -32,6 +32,7 @@ urlpatterns = [
         "api/articles/2022-03-02/", include("apps.articles.urls", namespace="articles")
     ),
     path("api/trips/2022-03-02/", include("apps.trips.urls", namespace="trips")),
+    path("api/places/2022-03-02/", include("apps.places.urls", namespace="places")),
     path("api/docs/2022-03-02/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
         "api/docs/2022-03-02/schema/swagger/",

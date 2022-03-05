@@ -13,3 +13,4 @@ class WayPointInline(admin.TabularInline):
     formfield_overrides = {
         PointField: {"widget": OSMWidget},
     }
+    exclude = ("trip_request",)

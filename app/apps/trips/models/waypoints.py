@@ -4,17 +4,20 @@ from packages.django.db import AbstractUUIDModel
 
 
 class WayPoint(AbstractUUIDModel):
-    trip_request = models.ForeignKey(
-        verbose_name=_("trip request"),
-        to="trips.TripRequest",
+    trip = models.ForeignKey(
+        verbose_name=_("trip"),
+        to="trips.Trip",
         on_delete=models.CASCADE,
         related_name="waypoints",
+        null=True,
         db_index=True,
     )
+
     order = models.PositiveSmallIntegerField(
         verbose_name=_("order"),
         db_index=True,
     )
+
     point = models.PointField(
         verbose_name=_("point"),
         geography=True,
@@ -27,5 +30,5 @@ class WayPoint(AbstractUUIDModel):
         ordering = ("order",)
         unique_together = (
             "order",
-            "trip_request",
+            "trip",
         )
