@@ -40,15 +40,16 @@ class PassengerTripRequestAPIViewSet(
 
         qs = self.model.objects.active()
 
-        user_session_id = self.request.query_params.get("user_session")
+        if self.action == "list":
+            user_session_id = self.request.query_params.get("user_session")
 
-        try:
-            user_session = UserSession.objects.get(id=user_session_id)
-            user_session.last_active_at = now
-            user_session.save(update_fields=["last_active_at"])
-            qs = qs.filter(user_session=user_session)
-        except UserSession.DoesNotExist:
-            return qs.none()
+            try:
+                user_session = UserSession.objects.get(id=user_session_id)
+                user_session.last_active_at = now
+                user_session.save(update_fields=["last_active_at"])
+                qs = qs.filter(user_session=user_session)
+            except UserSession.DoesNotExist:
+                return qs.none()
 
         return qs.prefetch_related("trip__waypoints")
 
@@ -108,6 +109,6 @@ class PassengerTripRequestAPIViewSet(
         serializer = self.get_serializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        TripRequestService.cancel_requested_trip(instance)
+        TripRequestService.complete_requested_trip(instance)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
