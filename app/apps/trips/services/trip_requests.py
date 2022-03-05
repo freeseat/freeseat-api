@@ -59,3 +59,24 @@ class TripRequestService:
         trip_request.refresh_from_db()
 
         return trip_request
+
+    @classmethod
+    def _change_trip_request_state(
+        cls, trip_request: TripRequest, to_state: TripRequest.TripRequestState
+    ) -> TripRequest:
+        trip_request.state = to_state
+        trip_request.save(update_fields=["state"])
+
+        return trip_request
+
+    @classmethod
+    def cancel_requested_trip(cls, trip_request: TripRequest) -> TripRequest:
+        return cls._change_trip_request_state(
+            trip_request, TripRequest.TripRequestState.CANCELLED
+        )
+
+    @classmethod
+    def complete_requested_trip(cls, trip_request: TripRequest) -> TripRequest:
+        return cls._change_trip_request_state(
+            trip_request, TripRequest.TripRequestState.COMPLETED
+        )

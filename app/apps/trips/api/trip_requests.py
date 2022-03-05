@@ -1,4 +1,5 @@
 from apps.accounts.models import UserSession
+from apps.trips.filters import TripRequestFilter
 from apps.trips.serializers import (
     TripRequestCreateSerializer,
     TripRequestPrivateSerializer,
@@ -7,108 +8,16 @@ from apps.trips.serializers import (
 from apps.trips.services import TripRequestService
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
+from django.db import transaction
 from django.utils import timezone
-from django.utils.translation import gettext_lazy as _
-from django_filters import fields, filters, filterset
 from django_filters.rest_framework import DjangoFilterBackend
 from packages.math.metric_buffer import with_metric_buffer
 from packages.restframework.pagination import PageNumberPaginationWithPageCounter
-from rest_framework import permissions, viewsets
+from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
 __all__ = ["TripRequestAPIViewSet"]
-
-
-class TripRequestFilter(filterset.FilterSet):
-    user_session = filters.ModelChoiceFilter(
-        method="filter_by_user_session",
-        label=_("user session"),
-        queryset=UserSession.objects.all(),
-    )
-
-    def filter_by_user_session(self, queryset, name, value):
-        return queryset
-
-    spoken_languages = filters.BaseCSVFilter(
-        method="filter_by_spoken_languages",
-        label=_("spoken languages"),
-        widget=fields.CSVWidget,
-    )
-
-    def filter_by_spoken_languages(self, queryset, name, value):
-        return queryset.filter(spoken_languages__code__in=value).distinct()
-
-    with_pets = filters.BooleanFilter(
-        method="filter_by_pets",
-        label=_("with pets"),
-    )
-
-    def filter_by_pets(self, queryset, name, value):
-        if value:
-            return queryset
-        return queryset.exclude(with_pets=True)
-
-    number_of_people = filters.NumberFilter(
-        label=_("number of people"),
-        lookup_expr="lte",
-    )
-
-    luggage_size = filters.NumberFilter(
-        label=_("luggage size"),
-        method="filter_by_luggage_size",
-    )
-
-    def filter_by_luggage_size(self, queryset, name, value):
-        if value == self.Meta.model.LuggageSize.CARGO:
-            return queryset.filter(luggage_size=value)
-        return queryset.filter(luggage_size__lte=value)
-
-    lon = filters.NumberFilter(
-        label=_("longitude"),
-        method="filter_by_lon",
-    )
-
-    def filter_by_lon(self, queryset, name, value):
-        return queryset
-
-    lat = filters.NumberFilter(
-        label=_("latitude"),
-        method="filter_by_lat",
-    )
-
-    def filter_by_lat(self, queryset, name, value):
-        return queryset
-
-    radius = filters.NumberFilter(
-        label=_("radius"),
-        method="filter_by_radius",
-    )
-
-    def filter_by_radius(self, queryset, name, value):
-        return queryset
-
-    page_size = filters.NumberFilter(
-        label=_("page size"),
-        method="filter_by_page_size",
-    )
-
-    def filter_by_page_size(self, queryset, name, value):
-        return queryset
-
-    class Meta:
-        model = TripRequestPublicSerializer.Meta.model
-        fields = [
-            "user_session",
-            "spoken_languages",
-            "with_pets",
-            "number_of_people",
-            "with_pets",
-            "luggage_size",
-            "lon",
-            "lat",
-            "radius",
-        ]
 
 
 class TripRequestAPIViewSet(viewsets.ModelViewSet):
@@ -141,6 +50,24 @@ class TripRequestAPIViewSet(viewsets.ModelViewSet):
     ]
     filter_class = TripRequestFilter
     permission_classes = [permissions.AllowAny]
+
+    def get_serializer_class(self):
+        serializer_class = {
+            "create": TripRequestCreateSerializer,
+            "update": TripRequestPrivateSerializer,
+            "partial_update": TripRequestPrivateSerializer,
+        }.get(self.action, self.serializer_class)
+
+        # TODO: refactor after splitting APIs
+        if (
+            self.request.user.is_authenticated
+            or UserSession.objects.filter(
+                id=self.request.query_params.get("user_session")
+            ).exists()
+        ):
+            serializer_class = TripRequestPrivateSerializer
+
+        return serializer_class
 
     def get_queryset(self):
         now = timezone.now()
@@ -187,34 +114,50 @@ class TripRequestAPIViewSet(viewsets.ModelViewSet):
 
         return qs.prefetch_related("trip__waypoints")
 
-    def get_serializer_class(self):
-        if self.action == "create":
-            return TripRequestCreateSerializer
-        if (
-            self.request.user.is_authenticated
-            or UserSession.objects.filter(
-                id=self.request.query_params.get("user_session")
-            ).exists()
-            or self.action in ["update", "partial_update"]
-        ):
-            return TripRequestPrivateSerializer
-        return super().get_serializer_class()
-
     def perform_update(self, serializer):
-        TripRequestService.update_requested_trip(
+        return TripRequestService.update_requested_trip(
             serializer.instance, serializer.validated_data
         )
 
+    @transaction.atomic
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop("partial", False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+
+        instance = self.perform_update(serializer)
+        serializer = self.get_serializer(instance)
+
+        if getattr(instance, "_prefetched_objects_cache", None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
+
     def perform_create(self, serializer):
-        TripRequestService.request_trip(serializer.validated_data)
+        return TripRequestService.request_trip(serializer.validated_data)
+
+    @transaction.atomic
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        instance = self.perform_create(serializer)
+        serializer = self.get_serializer(instance)
+        headers = self.get_success_headers(serializer.data)
+
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+        )
 
     def perform_destroy(self, instance):
-        instance.state = self.model.TripRequestState.CANCELLED
-        instance.save(update_fields=["state"])
+        TripRequestService.cancel_requested_trip(instance)
 
+    @transaction.atomic
     @action(detail=True, methods=["post"], url_path="complete")
     def complete_trip_request(self, request, *args, **kwargs):
-        trip_request = self.get_object()
-        trip_request.state = self.model.TripRequestState.COMPLETED
-        trip_request.save(update_fields=["state"])
-        return Response()
+        instance = self.get_object()
+        TripRequestService.cancel_requested_trip(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
