@@ -27,7 +27,9 @@ urlpatterns = [
     path(
         "api/accounts/2022-03-02/", include("apps.accounts.urls", namespace="accounts")
     ),
-    path("api/trips/2022-03-02/", include("apps.trips.urls", namespace="trips")),
+    path(
+        "api/trips/2022-03-02/", include("apps.trips.urls_outdated", namespace="trips")
+    ),
     path("api/docs/2022-03-02/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
         "api/docs/2022-03-02/schema/swagger/",
