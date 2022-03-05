@@ -1,5 +1,8 @@
 from apps.trips.models import TripRequest
 from django.contrib.gis import admin
+from django.urls import reverse
+from django.utils.html import format_html
+from django.utils.translation import gettext_lazy as _
 from django_admin_geomap import ModelAdmin as GeoMapModelAdmin
 from packages.django.contrib.admin import CreatedByUserAdminMixin
 from simple_history.admin import SimpleHistoryAdmin
@@ -19,6 +22,7 @@ class TripRequestAdmin(
         "with_pets",
         "luggage_size",
         "allow_partial_trip",
+        "link_to_trip",
         "state",
         "comment",
     )
@@ -49,3 +53,9 @@ class TripRequestAdmin(
         if not obj:
             return ("state",)
         return super().get_readonly_fields(request, obj)
+
+    @admin.display(description=_("trip"))
+    def link_to_trip(self, obj):
+        if obj.trip:
+            link = reverse("admin:trips_trip_change", args=[obj.trip_id])
+            return format_html('<a href="%s">%s</a>' % (link, obj.trip))
