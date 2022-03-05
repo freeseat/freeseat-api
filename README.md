@@ -85,8 +85,15 @@ cd app
 ./manage.py runserver
 ```
 
-## List of the environmental variables used in project:
 
+### Running server in docker
+
+```shell
+docker-compose -f deployment/docker-compose.yml -p freeseat-api up --build --force-recreate -d
+```
+
+
+## List of the environmental variables used in project:
 
 | Variable               | Default value      | Is required | Description                               |
 |------------------------|--------------------|:-----------:| ----------------------------------------- |

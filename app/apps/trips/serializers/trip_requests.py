@@ -1,11 +1,10 @@
 from apps.accounts.models import UserSession
 from apps.trips.models import TripRequest
 from apps.trips.serializers.waypoints import WayPointSerializer
-from django.contrib.gis.geos import Point
-from django.db import transaction
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.validators import ValidationError
+from rest_framework_gis.fields import GeometryField
 
 __all__ = [
     "TripRequestPublicSerializer",
@@ -15,7 +14,12 @@ __all__ = [
 
 
 class TripRequestPublicSerializer(serializers.ModelSerializer):
-    waypoints = WayPointSerializer(many=True)
+    waypoints = WayPointSerializer(source="trip.waypoints", many=True, allow_null=True)
+    route_length = serializers.FloatField(source="trip.route_length", allow_null=True)
+    route = GeometryField(write_only=True, source="trip.route", allow_null=True)
+    distance_in_km = serializers.FloatField(
+        source="distance.km", read_only=True, default=None
+    )
 
     def validate_waypoints(self, waypoints):
         if len(waypoints) < 2:
@@ -24,12 +28,14 @@ class TripRequestPublicSerializer(serializers.ModelSerializer):
                     "waypoints": [_("This list should contain at least 2 points.")],
                 }
             )
+
         return waypoints
 
     class Meta:
         model = TripRequest
         read_only_fields = [
             "last_active_at",
+            "distance_in_km",
         ]
         fields = read_only_fields + [
             "spoken_languages",
@@ -39,32 +45,14 @@ class TripRequestPublicSerializer(serializers.ModelSerializer):
             "luggage_size",
             "waypoints",
             "route_length",
+            "route",
+            "allow_partial_trip",
         ]
 
 
 class TripRequestPrivateSerializer(TripRequestPublicSerializer):
     class Meta(TripRequestPublicSerializer.Meta):
         fields = TripRequestPublicSerializer.Meta.fields + ["id"]
-
-    @transaction.atomic
-    def update(self, instance, validated_data):
-        waypoints = validated_data.pop("waypoints", None)
-
-        trip_request = super().update(instance, validated_data)
-
-        if waypoints:
-            trip_request.waypoints.all().delete()
-
-            for waypoint in waypoints:
-                WayPointSerializer.Meta.model.objects.create(
-                    trip_request=trip_request,
-                    order=waypoint.get("order"),
-                    point=Point(
-                        *waypoint.get("point").get("coords"),
-                    ),
-                )
-
-        return trip_request
 
 
 class TripRequestCreateSerializer(TripRequestPrivateSerializer):
@@ -83,20 +71,3 @@ class TripRequestCreateSerializer(TripRequestPrivateSerializer):
 
     class Meta(TripRequestPrivateSerializer.Meta):
         fields = TripRequestPrivateSerializer.Meta.fields + ["user_session"]
-
-    @transaction.atomic
-    def create(self, validated_data):
-        waypoints = validated_data.pop("waypoints")
-
-        trip_request = super().create(validated_data)
-
-        for waypoint in waypoints:
-            WayPointSerializer.Meta.model.objects.create(
-                trip_request=trip_request,
-                order=waypoint.get("order"),
-                point=Point(
-                    *waypoint.get("point").get("coords"),
-                ),
-            )
-
-        return trip_request

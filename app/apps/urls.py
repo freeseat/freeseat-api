@@ -13,6 +13,8 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 from drf_spectacular.views import (
@@ -23,22 +25,52 @@ from drf_spectacular.views import (
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    # TODO: DROP FROM THERE
     path(
-        "api/accounts/2022-03-02/", include("apps.accounts.urls", namespace="accounts")
+        "api/accounts/2022-03-02/",
+        include("apps.accounts.urls", namespace="accounts-outdated"),
     ),
     path(
-        "api/articles/2022-03-02/", include("apps.articles.urls", namespace="articles")
+        "api/trips/2022-03-02/",
+        include("apps.trips.urls_outdated", namespace="trips-outdated"),
     ),
-    path("api/trips/2022-03-02/", include("apps.trips.urls", namespace="trips")),
-    path("api/docs/2022-03-02/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path(
+        "api/docs/2022-03-02/schema/",
+        SpectacularAPIView.as_view(),
+        name="schema-outdated",
+    ),
     path(
         "api/docs/2022-03-02/schema/swagger/",
         SpectacularSwaggerView.as_view(url_name="schema"),
-        name="swagger-ui",
+        name="swagger-ui-outdated",
     ),
     path(
         "api/docs/2022-03-02/schema/redoc/",
         SpectacularRedocView.as_view(url_name="schema"),
+        name="redoc-outdated",
+    ),
+    # TODO: DROP TO HERE
+    path(
+        "api/2022-03-05/accounts/", include("apps.accounts.urls", namespace="accounts")
+    ),
+    path(
+        "api/2022-03-05/articles/", include("apps.articles.urls", namespace="articles")
+    ),
+    path("api/2022-03-05/trips/", include("apps.trips.urls", namespace="trips")),
+    path("api/2022-03-05/places/", include("apps.places.urls", namespace="places")),
+    path("api/2022-03-05/docs/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path(
+        "api/2022-03-05/docs/schema/swagger/",
+        SpectacularSwaggerView.as_view(url_name="schema"),
+        name="swagger-ui",
+    ),
+    path(
+        "api/2022-03-05/docs/schema/redoc/",
+        SpectacularRedocView.as_view(url_name="schema"),
         name="redoc",
     ),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

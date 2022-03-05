@@ -26,7 +26,7 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 DEBUG = os.getenv("DJANGO_DEBUG", default=False)
 
 
-ALLOWED_HOSTS = ["127.0.0.1", "freeseat.me"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "freeseat.me"]
 
 CSRF_TRUSTED_ORIGINS = ["https://freeseat.me"]
 
@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.gis",
     "corsheaders",
+    "treebeard",
     "rest_framework",
     "rest_framework_gis",
     "django_admin_geomap",
@@ -55,6 +56,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "apps.accounts",
     "apps.articles",
+    "apps.places",
     "apps.trips",
 ]
 
@@ -153,6 +155,5 @@ MEDIA_ROOT = "media"
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
 
 AUTH_USER_MODEL = "accounts.User"

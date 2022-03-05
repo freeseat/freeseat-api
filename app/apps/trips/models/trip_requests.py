@@ -1,5 +1,6 @@
 from django.contrib.gis.db import models
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django_admin_geomap import GeoItem
 from packages.django.db.models import AbstractUUIDModel
@@ -7,7 +8,20 @@ from packages.django.db.models import AbstractUUIDModel
 __all__ = ["TripRequest"]
 
 
+class TripRequestManager(models.Manager):
+    def active(self):
+        now = timezone.now()
+        past_24_hours = now - timezone.timedelta(hours=24)
+
+        return self.model.objects.filter(
+            state=self.model.TripRequestState.ACTIVE,
+            last_active_at__gte=past_24_hours,
+        )
+
+
 class TripRequest(AbstractUUIDModel, GeoItem):
+    objects = TripRequestManager()
+
     created_by = models.ForeignKey(
         verbose_name=_("created by"),
         to="accounts.User",
@@ -57,7 +71,7 @@ class TripRequest(AbstractUUIDModel, GeoItem):
         related_name="+",
     )
 
-    class TripState(models.TextChoices):
+    class TripRequestState(models.TextChoices):
         ACTIVE = "active", _("active")
         CANCELLED = "cancelled", _("cancelled")
         COMPLETED = "completed", _("completed")
@@ -67,8 +81,8 @@ class TripRequest(AbstractUUIDModel, GeoItem):
     state = models.CharField(
         max_length=32,
         verbose_name=_("state"),
-        default=TripState.ACTIVE,
-        choices=TripState.choices,
+        default=TripRequestState.ACTIVE,
+        choices=TripRequestState.choices,
         db_index=True,
     )
 
@@ -100,24 +114,41 @@ class TripRequest(AbstractUUIDModel, GeoItem):
         verbose_name=_("comment"),
     )
 
-    route_length = models.FloatField(verbose_name=_("route_length"))
+    allow_partial_trip = models.BooleanField(
+        verbose_name=_("allow partial trip"),
+        default=False,
+        db_index=True,
+    )
+
+    trip = models.OneToOneField(
+        verbose_name=_("trip"),
+        to="trips.Trip",
+        on_delete=models.CASCADE,
+        related_name="trip_request",
+        null=True,
+        db_index=True,
+    )
+
+    starting_point = models.PointField(
+        verbose_name=_("point"),
+        geography=True,
+        spatial_index=True,
+        null=True,
+        blank=True,
+    )
 
     class Meta:
-        verbose_name = _("trip")
-        verbose_name_plural = _("trips")
-        ordering = ("-route_length", "-created_at")
-
-    @property
-    def starting_point(self):
-        return self.waypoints.first()
+        verbose_name = _("trip request")
+        verbose_name_plural = _("trip requests")
+        ordering = ("-trip__route_length", "-created_at")
 
     @property
     def geomap_longitude(self):
-        return self.starting_point.point.x if self.starting_point else None
+        return self.starting_point.x if self.starting_point else None
 
     @property
     def geomap_latitude(self):
-        return self.starting_point.point.y if self.starting_point else None
+        return self.starting_point.y if self.starting_point else None
 
     @property
     def geomap_icon(self):
