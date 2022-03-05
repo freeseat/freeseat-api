@@ -4,6 +4,7 @@ from apps.trips.serializers import (
     TripRequestPrivateSerializer,
     TripRequestPublicSerializer,
 )
+from apps.trips.services import TripRequestService
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
 from django.utils import timezone
@@ -192,6 +193,14 @@ class TripRequestsAPIViewSet(viewsets.ModelViewSet):
         ):
             return TripRequestPrivateSerializer
         return super().get_serializer_class()
+
+    def perform_update(self, serializer):
+        TripRequestService.update_requested_trip(
+            serializer.instance, serializer.validated_data
+        )
+
+    def perform_create(self, serializer):
+        TripRequestService.request_trip(serializer.validated_data)
 
     def perform_destroy(self, instance):
         instance.state = self.model.TripRequestState.CANCELLED
