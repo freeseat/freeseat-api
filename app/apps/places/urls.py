@@ -5,7 +5,7 @@ router = routers.DefaultRouter()
 
 app_name = "places"
 
-router.register(r"", PlaceAPIViewSet, basename="places")
 router.register(r"categories", PlaceCategoryAPIViewSet, basename="categories")
+router.register(r"", PlaceAPIViewSet, basename="places")
 
 urlpatterns = router.urls
