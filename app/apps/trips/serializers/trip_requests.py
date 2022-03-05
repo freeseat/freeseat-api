@@ -7,13 +7,12 @@ from rest_framework.validators import ValidationError
 from rest_framework_gis.fields import GeometryField
 
 __all__ = [
-    "TripRequestPublicSerializer",
-    "TripRequestPrivateSerializer",
+    "TripRequestListSerializer",
     "TripRequestCreateSerializer",
 ]
 
 
-class TripRequestPublicSerializer(serializers.ModelSerializer):
+class TripRequestListSerializer(serializers.ModelSerializer):
     waypoints = WayPointSerializer(source="trip.waypoints", many=True, allow_null=True)
     route_length = serializers.FloatField(source="trip.route_length", allow_null=True)
     route = GeometryField(write_only=True, source="trip.route", allow_null=True)
@@ -34,6 +33,7 @@ class TripRequestPublicSerializer(serializers.ModelSerializer):
     class Meta:
         model = TripRequest
         read_only_fields = [
+            "id",
             "last_active_at",
             "distance_in_km",
         ]
@@ -50,12 +50,7 @@ class TripRequestPublicSerializer(serializers.ModelSerializer):
         ]
 
 
-class TripRequestPrivateSerializer(TripRequestPublicSerializer):
-    class Meta(TripRequestPublicSerializer.Meta):
-        fields = TripRequestPublicSerializer.Meta.fields + ["id"]
-
-
-class TripRequestCreateSerializer(TripRequestPrivateSerializer):
+class TripRequestCreateSerializer(TripRequestListSerializer):
     user_session = serializers.PrimaryKeyRelatedField(
         write_only=True, queryset=UserSession.objects.all(), required=False
     )
@@ -69,5 +64,5 @@ class TripRequestCreateSerializer(TripRequestPrivateSerializer):
 
         return attrs
 
-    class Meta(TripRequestPrivateSerializer.Meta):
-        fields = TripRequestPrivateSerializer.Meta.fields + ["user_session"]
+    class Meta(TripRequestListSerializer.Meta):
+        fields = TripRequestListSerializer.Meta.fields + ["user_session"]
