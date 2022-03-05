@@ -1,4 +1,4 @@
-from apps.places.models import Place
+from apps.places.models import PointOfInterest
 from django.contrib.gis import admin
 from django.urls import reverse
 from django.utils.html import format_html
@@ -8,11 +8,11 @@ from modeltranslation.admin import TranslationAdmin
 from packages.django.contrib.admin import CreatedByUserAdminMixin
 from simple_history.admin import SimpleHistoryAdmin
 
-__all__ = ["PlaceAdmin"]
+__all__ = ["PointOfInterestAdmin"]
 
 
-@admin.register(Place)
-class PlaceAdmin(
+@admin.register(PointOfInterest)
+class PointOfInterestAdmin(
     CreatedByUserAdminMixin,
     TranslationAdmin,
     SimpleHistoryAdmin,
@@ -44,5 +44,5 @@ class PlaceAdmin(
     @admin.display(description=_("category"))
     def link_to_category(self, obj):
         if obj.category_id:
-            link = reverse("admin:places_placecategory_change", args=[obj.category_id])
+            link = reverse("admin:places_poicategory_change", args=[obj.category_id])
             return format_html('<a href="%s">%s</a>' % (link, obj.category))

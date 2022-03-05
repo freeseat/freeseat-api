@@ -1,13 +1,13 @@
 import simple_history
-from apps.places.models import PlaceCategory
+from apps.places.models import POICategory
 from modeltranslation.translator import TranslationOptions, register
 
-__all__ = ["PlaceCategoryTranslationOptions"]
+__all__ = ["POICategoryTranslationOptions"]
 
 
-@register(PlaceCategory)
-class PlaceCategoryTranslationOptions(TranslationOptions):
+@register(POICategory)
+class POICategoryTranslationOptions(TranslationOptions):
     fields = ("name", "description")
 
 
-simple_history.register(PlaceCategory, inherit=True)
+simple_history.register(POICategory, inherit=True)

@@ -1,12 +1,12 @@
-from apps.places.models import Place
+from apps.places.models import PointOfInterest
 from rest_framework import serializers
 
-__all__ = ["PlaceSerializer"]
+__all__ = ["PointOfInterestSerializer"]
 
 
-class PlaceSerializer(serializers.ModelSerializer):
+class PointOfInterestSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Place
+        model = PointOfInterest
         fields = [
             "id",
             "name_en",
