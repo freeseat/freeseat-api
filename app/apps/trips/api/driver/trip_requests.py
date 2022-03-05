@@ -1,12 +1,17 @@
 from apps.trips.filters import TripRequestFilter
-from apps.trips.serializers import TripRequestListSerializer
+from apps.trips.serializers import (
+    TripRequestListSerializer,
+    TripRequestSearchSerializer,
+)
 from apps.trips.services import TripRequestService
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
 from django_filters.rest_framework import DjangoFilterBackend
 from packages.math.metric_buffer import with_metric_buffer
 from packages.restframework.pagination import PageNumberPaginationWithPageCounter
-from rest_framework import permissions, viewsets
+from rest_framework import permissions, status, viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 __all__ = ["DriverTripRequestAPIViewSet"]
 
@@ -32,9 +37,13 @@ class DriverTripRequestAPIViewSet(viewsets.ReadOnlyModelViewSet):
     filter_class = TripRequestFilter
     permission_classes = [permissions.AllowAny]
 
+    def get_serializer_class(self):
+        # if self.action == "search":
+        #     return TripRequestSearchSerializer
+        return super().get_serializer_class()
+
     def get_queryset(self):
         qs = self.model.objects.active()
-
         return qs.prefetch_related("trip__waypoints")
 
     def filter_queryset(self, qs):
@@ -71,3 +80,9 @@ class DriverTripRequestAPIViewSet(viewsets.ReadOnlyModelViewSet):
         )
 
         return qs
+
+    # @action(detail=False, methods=["post"], url_path="search")
+    # def search(self, request, *args, **kwargs):
+    #     serializer = self.get_serializer(data=request.data)
+    #     serializer.is_valid(raise_exception=True)
+    #     return Response()
