@@ -88,6 +88,14 @@ class TripRequestsFilter(filterset.FilterSet):
     def filter_by_radius(self, queryset, name, value):
         return queryset
 
+    page_size = filters.NumberFilter(
+        label=_("page size"),
+        method="filter_by_page_size",
+    )
+
+    def filter_by_page_size(self, queryset, name, value):
+        return queryset
+
     class Meta:
         model = TripRequestPublicSerializer.Meta.model
         fields = [
@@ -162,17 +170,15 @@ class TripRequestsAPIViewSet(viewsets.ModelViewSet):
 
             if lon and lat:
                 location = Point(float(lon), float(lat), srid=4326)
+                qs = qs.annotate(
+                    distance=Distance("starting_point", location)
+                ).order_by("distance")
 
                 if radius:
                     area = with_metric_buffer(
                         location, int(radius) * 1000, map_srid=4326
                     )
                     qs = qs.filter(starting_point__coveredby=area)
-
-                else:
-                    qs = qs.annotate(
-                        distance=Distance("starting_point", location)
-                    ).order_by("distance")[:10]
 
             return qs
 
