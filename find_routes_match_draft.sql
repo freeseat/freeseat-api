@@ -22,13 +22,13 @@ WITH
         SELECT trip_route.name                                                         AS trip_name,
                trip_route.route                                                        AS trip_route,
                trip_route.max_deviation_meters                                         AS trip_max_deviation_meters,
-               query_routes.route                                                        AS query_route,
+               query_routes.route                                                      AS query_route,
                ST_LineLocatePoint(trip_route.route, st_startpoint(query_routes.route)) AS closest_point_fraction
         FROM query_routes
              LEFT JOIN trip_route
              ON TRUE
     ),
-    trip_effective_routes                AS (
+    trip_effective_routes                  AS (
         SELECT trip_name,
                ST_LineSubstring(trip_route, closest_point_fraction, 1) AS trip_route,
                trip_max_deviation_meters,
@@ -39,7 +39,7 @@ WITH
                       ST_LineInterpolatePoint(trip_route, closest_point_fraction)::geography
                   ) < trip_max_deviation_meters
     ),
-    trip_expanded_routes                 AS (
+    trip_expanded_routes                   AS (
         SELECT trip_name,
                trip_route,
                st_buffer(
