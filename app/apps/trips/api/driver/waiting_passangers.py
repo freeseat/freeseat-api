@@ -5,10 +5,10 @@ from apps.trips.serializers import (
 from packages.restframework.pagination import PageNumberPaginationWithPageCounter
 from rest_framework import viewsets
 
-__all__ = ["TripRequestStartingPointViewSet"]
+__all__ = ["WaitingPassengerViewSet"]
 
 
-class TripRequestStartingPointViewSet(viewsets.ReadOnlyModelViewSet):
+class WaitingPassengerViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = TripRequestListSerializer
     model = TripRequestListSerializer.Meta.model
     queryset = model.objects.active()

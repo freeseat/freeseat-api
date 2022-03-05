@@ -1,7 +1,7 @@
 from apps.trips.api import (
     DriverTripRequestAPIViewSet,
     PassengerTripRequestAPIViewSet,
-    TripRequestStartingPointViewSet,
+    WaitingPassengerViewSet,
 )
 from rest_framework import routers
 
@@ -15,9 +15,9 @@ router.register(
     basename="driver-trip-requests",
 )
 router.register(
-    r"driver/passenger-starting-points",
-    TripRequestStartingPointViewSet,
-    basename="passenger-starting-points",
+    r"driver/waiting-passengers",
+    WaitingPassengerViewSet,
+    basename="waiting-passengers",
 )
 router.register(
     r"passenger/requested-trips",
