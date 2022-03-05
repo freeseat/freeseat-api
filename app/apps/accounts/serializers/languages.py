@@ -9,5 +9,8 @@ class LanguageSerializer(serializers.ModelSerializer):
         model = Language
         fields = [
             "code",
-            "name",
+            "name_en",
+            "name_ru",
+            "name_uk",
+            "name_pl",
         ]
