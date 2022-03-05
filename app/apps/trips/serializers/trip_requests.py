@@ -16,7 +16,7 @@ __all__ = [
 class TripRequestPublicSerializer(serializers.ModelSerializer):
     waypoints = WayPointSerializer(source="trip.waypoints", many=True, allow_null=True)
     route_length = serializers.FloatField(source="trip.route_length", allow_null=True)
-    route = GeometryField(source="trip.route", allow_null=True)
+    route = GeometryField(write_only=True, source="trip.route", allow_null=True)
     distance_in_km = serializers.FloatField(
         source="distance.km", read_only=True, default=None
     )
@@ -35,7 +35,6 @@ class TripRequestPublicSerializer(serializers.ModelSerializer):
         model = TripRequest
         read_only_fields = [
             "last_active_at",
-            "starting_point",
             "distance_in_km",
         ]
         fields = read_only_fields + [
@@ -47,7 +46,6 @@ class TripRequestPublicSerializer(serializers.ModelSerializer):
             "waypoints",
             "route_length",
             "route",
-            "starting_point",
             "allow_partial_trip",
         ]
 
