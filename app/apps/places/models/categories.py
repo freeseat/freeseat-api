@@ -35,8 +35,8 @@ class POICategory(AbstractUUIDModel, MP_Node):
     node_order_by = ["name"]
 
     class Meta:
-        verbose_name = _("place category")
-        verbose_name_plural = _("place categories")
+        verbose_name = _("place of interest category")
+        verbose_name_plural = _("place of interest categories")
 
     def __str__(self):
         return self.name
