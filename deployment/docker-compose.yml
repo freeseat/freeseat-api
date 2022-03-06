@@ -70,7 +70,7 @@ services:
     expose:
       - 5432
     environment:
-      - POSTGRES_DB=postgres
+      - POSTGRES_DB=freeseat
       - PGPORT=5432
       - POSTGRES_USER=django
       - POSTGRES_PASSWORD=pass
