@@ -1,12 +1,16 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from packages.django.db.models import AbstractUUIDModel
 from treebeard.mp_tree import MP_Node
 
 __all__ = ["POICategory"]
 
 
-class POICategory(AbstractUUIDModel, MP_Node):
+class POICategory(MP_Node):
+    code = models.CharField(
+        verbose_name=_("code"),
+        max_length=255,
+        primary_key=True,
+    )
     created_at = models.DateTimeField(
         verbose_name=_("created at"), auto_now_add=True, editable=False, db_index=True
     )
@@ -35,8 +39,8 @@ class POICategory(AbstractUUIDModel, MP_Node):
     node_order_by = ["name"]
 
     class Meta:
-        verbose_name = _("place of interest category")
-        verbose_name_plural = _("place of interest categories")
+        verbose_name = _("point of interest category")
+        verbose_name_plural = _("point of interest categories")
 
     def __str__(self):
         return self.name

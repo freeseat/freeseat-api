@@ -8,7 +8,7 @@ class POICategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = POICategory
         fields = [
-            "id",
+            "code",
             "name_en",
             "name_ru",
             "name_uk",
