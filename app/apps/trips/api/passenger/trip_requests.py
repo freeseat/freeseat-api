@@ -93,7 +93,7 @@ class PassengerTripRequestAPIViewSet(
         serializer = self.get_serializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        TripRequestService.cancel_requested_trip(instance)
+        TripRequestService.cancel_requested_trip(instance, serializer.validated_data)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -104,6 +104,6 @@ class PassengerTripRequestAPIViewSet(
         serializer = self.get_serializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        TripRequestService.complete_requested_trip(instance)
+        TripRequestService.complete_requested_trip(instance, serializer.validated_data)
 
         return Response(status=status.HTTP_204_NO_CONTENT)

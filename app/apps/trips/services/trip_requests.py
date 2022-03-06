@@ -1,4 +1,5 @@
 from apps.accounts.models import Language
+from apps.comments.models import Comment
 from apps.logs.models import TripRequestSearchLog
 from apps.trips.enums import TripState
 from apps.trips.models import Trip, TripRequest, WayPoint
@@ -71,21 +72,33 @@ class TripRequestService:
         trip_requests.update(last_active_at=now)
 
     @classmethod
+    @transaction.atomic
     def _change_trip_request_state(
-        cls, trip_request: TripRequest, to_state: TripState
+        cls, trip_request: TripRequest, to_state: TripState, comment: str
     ) -> TripRequest:
         trip_request.state = to_state
         trip_request.save(update_fields=["state"])
 
+        if comment:
+            Comment.objects.create(content=comment, content_object=trip_request)
+
         return trip_request
 
     @classmethod
-    def cancel_requested_trip(cls, trip_request: TripRequest) -> TripRequest:
-        return cls._change_trip_request_state(trip_request, TripState.CANCELLED)
+    def cancel_requested_trip(
+        cls, trip_request: TripRequest, data: dict
+    ) -> TripRequest:
+        return cls._change_trip_request_state(
+            trip_request, TripState.CANCELLED, data.get("comment")
+        )
 
     @classmethod
-    def complete_requested_trip(cls, trip_request: TripRequest) -> TripRequest:
-        return cls._change_trip_request_state(trip_request, TripState.COMPLETED)
+    def complete_requested_trip(
+        cls, trip_request: TripRequest, data: dict
+    ) -> TripRequest:
+        return cls._change_trip_request_state(
+            trip_request, TripState.COMPLETED, data.get("comment")
+        )
 
     @classmethod
     def log_trip_request_search(

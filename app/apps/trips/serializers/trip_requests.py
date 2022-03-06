@@ -71,6 +71,8 @@ class TripRequestCreateSerializer(TripRequestListSerializer):
 
 
 class TripRequestStateChangeSerializer(serializers.ModelSerializer):
+    comment = serializers.CharField(required=False)
+
     def validate_user_session(self, user_session):
         if self.instance.user_session != user_session:
             raise PermissionDenied
@@ -80,4 +82,5 @@ class TripRequestStateChangeSerializer(serializers.ModelSerializer):
         model = TripRequest
         fields = [
             "user_session",
+            "comment",
         ]
