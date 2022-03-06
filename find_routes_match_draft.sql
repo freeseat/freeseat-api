@@ -91,3 +91,39 @@ BEGIN
 
 END;
 $$ LANGUAGE plpgsql STABLE;
+
+
+CREATE OR REPLACE FUNCTION match_entire_trip(
+    trip_ids uuid[],
+    driver_route_polyline VARCHAR,
+    driver_max_deviation_meters REAL
+)
+    RETURNS TABLE
+            (
+                result_trip_id uuid
+            )
+AS
+$$
+DECLARE
+    driver_route      geography := st_linefromencodedpolyline(driver_route_polyline)::geography;
+    driver_route_geom geometry  = driver_route::geometry;
+BEGIN
+    RETURN QUERY
+        WITH
+            trips_routes AS (
+                SELECT id              AS trip_id,
+                       route::geometry AS trip_route_geom
+                FROM trips_trip
+                WHERE id = ANY (trip_ids)
+            )
+
+        SELECT trip_id
+        FROM trips_routes
+        WHERE ST_DWithin(st_startpoint(trip_route_geom)::geography, st_startpoint(driver_route_geom)::geography,
+                         driver_max_deviation_meters)
+
+          AND ST_DWithin(st_endpoint(trip_route_geom)::geography, st_endpoint(driver_route_geom)::geography,
+                         driver_max_deviation_meters);
+
+END;
+$$ LANGUAGE plpgsql STABLE;
