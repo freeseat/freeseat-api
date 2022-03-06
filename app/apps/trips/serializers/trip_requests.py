@@ -72,6 +72,10 @@ class TripRequestCreateSerializer(TripRequestListSerializer):
 
 class TripRequestStateChangeSerializer(serializers.ModelSerializer):
     comment = serializers.CharField(required=False)
+    result = serializers.CharField(source="report.result", required=False)
+    satisfaction_rate = serializers.IntegerField(
+        source="report.satisfaction_rate", required=False
+    )
 
     def validate_user_session(self, user_session):
         if self.instance.user_session != user_session:
@@ -82,5 +86,7 @@ class TripRequestStateChangeSerializer(serializers.ModelSerializer):
         model = TripRequest
         fields = [
             "user_session",
+            "result",
+            "satisfaction_rate",
             "comment",
         ]

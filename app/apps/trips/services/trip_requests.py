@@ -2,7 +2,7 @@ from apps.accounts.models import Language
 from apps.comments.models import Comment
 from apps.logs.models import TripRequestSearchLog
 from apps.trips.enums import TripState
-from apps.trips.models import Trip, TripRequest, WayPoint
+from apps.trips.models import Trip, TripRequest, TripRequestReport, WayPoint
 from django.db import transaction
 from django.utils import timezone
 
@@ -74,13 +74,20 @@ class TripRequestService:
     @classmethod
     @transaction.atomic
     def _change_trip_request_state(
-        cls, trip_request: TripRequest, to_state: TripState, comment: str
+        cls,
+        trip_request: TripRequest,
+        to_state: TripState,
+        comment: str,
+        report: dict,
     ) -> TripRequest:
         trip_request.state = to_state
         trip_request.save(update_fields=["state"])
 
         if comment:
             Comment.objects.create(content=comment, content_object=trip_request)
+
+        if report:
+            TripRequestReport.objects.create(trip_request=trip_request, **report)
 
         return trip_request
 
@@ -89,7 +96,10 @@ class TripRequestService:
         cls, trip_request: TripRequest, data: dict
     ) -> TripRequest:
         return cls._change_trip_request_state(
-            trip_request, TripState.CANCELLED, data.get("comment")
+            trip_request,
+            TripState.CANCELLED,
+            data.get("comment"),
+            data.get("report"),
         )
 
     @classmethod
@@ -97,7 +107,12 @@ class TripRequestService:
         cls, trip_request: TripRequest, data: dict
     ) -> TripRequest:
         return cls._change_trip_request_state(
-            trip_request, TripState.COMPLETED, data.get("comment")
+            trip_request,
+            TripState.COMPLETED,
+            data.get("comment"),
+            data.get(
+                "report",
+            ),
         )
 
     @classmethod
