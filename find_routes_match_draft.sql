@@ -123,7 +123,9 @@ BEGIN
                          driver_max_deviation_meters)
 
           AND ST_DWithin(st_endpoint(trip_route_geom)::geography, st_endpoint(driver_route_geom)::geography,
-                         driver_max_deviation_meters);
+                         driver_max_deviation_meters)
+        LIMIT 5;
+
 
 END;
 $$ LANGUAGE plpgsql STABLE;
