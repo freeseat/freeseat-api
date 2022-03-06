@@ -132,14 +132,6 @@ class TripRequest(AbstractUUIDModel, GeoItem):
         db_index=True,
     )
 
-    starting_point = models.PointField(
-        verbose_name=_("point"),
-        geography=True,
-        spatial_index=True,
-        null=True,
-        blank=True,
-    )
-
     class Meta:
         verbose_name = _("trip request")
         verbose_name_plural = _("trip requests")
