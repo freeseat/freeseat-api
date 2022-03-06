@@ -1,5 +1,4 @@
-# TODO: drop file
-from apps.accounts.models import Language
+from apps.operations.models import Language
 from django.contrib import admin
 from modeltranslation.admin import TranslationAdmin
 from packages.django.contrib.admin import CreatedByUserAdminMixin

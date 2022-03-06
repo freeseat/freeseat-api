@@ -1,10 +1,9 @@
-# TODO: drop file
 from django.urls import reverse
 from pytest_django.asserts import assertNumQueries
 
 
 class TestLanguagesList:
-    url = reverse("accounts:languages-list")
+    url = reverse("operations:languages-list")
 
     def test_list_of_languages_is_public_available(self, api_client, language_batch):
         # Given

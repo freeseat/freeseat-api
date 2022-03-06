@@ -1,5 +1,4 @@
-# TODO: drop file
-from apps.accounts.serializers import LanguageSerializer
+from apps.operations.serializers import LanguageSerializer
 from rest_framework import generics
 
 __all__ = ["LanguageListAPIView"]

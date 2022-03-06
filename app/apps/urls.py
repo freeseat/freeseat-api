@@ -26,6 +26,10 @@ from drf_spectacular.views import (
 urlpatterns = [
     path("admin/", admin.site.urls),
     path(
+        "api/2022-03-05/operations/",
+        include("apps.operations.urls", namespace="operations"),
+    ),
+    path(
         "api/2022-03-05/accounts/", include("apps.accounts.urls", namespace="accounts")
     ),
     path(
