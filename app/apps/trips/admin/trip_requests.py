@@ -29,9 +29,13 @@ class TripRequestAdmin(
         "comment",
         "number_of_displays",
     )
-    list_editable = ("state", "is_verified",)
+    list_editable = (
+        "state",
+        "is_verified",
+    )
     search_fields = ("comment",)
     list_filter = (
+        "is_verified",
         "last_active_at",
         "created_at",
         "spoken_languages",
