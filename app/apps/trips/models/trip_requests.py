@@ -14,6 +14,7 @@ class TripRequestManager(models.Manager):
         now = timezone.now()
         past_24_hours = now - timezone.timedelta(hours=24)
 
+        # TODO: move to QuerySet
         return self.model.objects.filter(
             state=TripState.ACTIVE,
             last_active_at__gte=past_24_hours,

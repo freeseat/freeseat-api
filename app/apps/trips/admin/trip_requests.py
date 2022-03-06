@@ -68,6 +68,7 @@ class TripRequestAdmin(
     number_of_displays.admin_order_field = 'number_of_displays'
 
     def get_queryset(self, request):
+        # TODO: move to QuerySet
         qs = super().get_queryset(request).annotate(
             number_of_displays=Count('displays')
         )

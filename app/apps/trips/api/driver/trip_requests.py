@@ -57,6 +57,8 @@ class DriverTripRequestAPIViewSet(viewsets.ReadOnlyModelViewSet):
 
         if lon and lat:
             location = Point(float(lon), float(lat), srid=4326)
+
+            # TODO: move to QuerySet
             qs = qs.annotate(distance=Distance("starting_point", location)).order_by(
                 "distance"
             )
