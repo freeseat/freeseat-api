@@ -1,4 +1,4 @@
-from apps.trips.models import TripRequestSearchLog
+from apps.logs.models import TripRequestSearchLog
 from django.contrib.gis import admin
 from django_admin_geomap import ModelAdmin as GeoMapModelAdmin
 from packages.django.contrib.admin import CreatedByUserAdminMixin

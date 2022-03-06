@@ -1,6 +1,7 @@
 from apps.accounts.models import Language
+from apps.logs.models import TripRequestSearchLog
 from apps.trips.enums import TripState
-from apps.trips.models import Trip, TripRequest, TripRequestSearchLog, WayPoint
+from apps.trips.models import Trip, TripRequest, WayPoint
 from django.db import transaction
 from django.utils import timezone
 
@@ -135,5 +136,5 @@ class TripRequestService:
             if results:
                 trip_request_search_log.results.set(results)
 
-        except ValueError as e:
+        except ValueError:
             pass
