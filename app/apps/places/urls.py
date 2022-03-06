@@ -5,9 +5,9 @@ router = routers.DefaultRouter()
 
 app_name = "places"
 
-router.register(r"poi-categories", PointOfInterestAPIViewSet, basename="categories")
+router.register(r"poi-categories", POICategoryAPIViewSet, basename="categories")
 router.register(
-    r"points-of-interest", POICategoryAPIViewSet, basename="points-of-interest"
+    r"points-of-interest", PointOfInterestAPIViewSet, basename="points-of-interest"
 )
 
 urlpatterns = router.urls

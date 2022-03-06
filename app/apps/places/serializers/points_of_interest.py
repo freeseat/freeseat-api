@@ -1,10 +1,23 @@
 from apps.places.models import PointOfInterest
+from apps.places.serializers.categories import POICategorySerializer
 from rest_framework import serializers
 
-__all__ = ["PointOfInterestSerializer"]
+__all__ = ["PointOfInterestListSerializer", "PointOfInterestDetailSerializer"]
 
 
-class PointOfInterestSerializer(serializers.ModelSerializer):
+class PointOfInterestListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PointOfInterest
+        fields = [
+            "id",
+            "category",
+            "point",
+        ]
+
+
+class PointOfInterestDetailSerializer(serializers.ModelSerializer):
+    category = POICategorySerializer()
+
     class Meta:
         model = PointOfInterest
         fields = [

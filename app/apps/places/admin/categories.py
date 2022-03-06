@@ -15,7 +15,6 @@ class POICategoryAdmin(
 ):
     list_display = ("name", "created_at", "updated_at", "link_to_created_by")
     readonly_fields = (
-        "id",
         "path",
         "depth",
         "numchild",
