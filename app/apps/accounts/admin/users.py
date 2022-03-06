@@ -19,7 +19,8 @@ class UserAdmin(SimpleHistoryAdmin, UserAdmin):
     list_filter = ("is_staff", "is_superuser", "registration_source")
     readonly_fields = ("id", "date_joined", "last_login", "registration_source")
     date_hierarchy = "date_joined"
-    exclude = ("groups", "user_permissions")
+    exclude = ("user_permissions",)
+    list_horizontal = ("groups",)
     fieldsets = ()
 
     def save_model(self, request, obj, form, change):

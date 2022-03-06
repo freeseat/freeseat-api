@@ -80,6 +80,20 @@ class TripRequest(AbstractUUIDModel, GeoItem):
         db_index=True,
     )
 
+    is_verified = models.BooleanField(
+        verbose_name=_("is verified"),
+        default=False,
+        db_index=True,
+    )
+
+    starting_point = models.PointField(
+        verbose_name=_("point"),
+        geography=True,
+        spatial_index=True,
+        null=True,
+        blank=True,
+    )
+
     number_of_people = models.PositiveSmallIntegerField(
         verbose_name=_("number of people"),
         default=1,

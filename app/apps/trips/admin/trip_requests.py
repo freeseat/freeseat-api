@@ -25,10 +25,11 @@ class TripRequestAdmin(
         "allow_partial_trip",
         "link_to_trip",
         "state",
+        "is_verified",
         "comment",
         "number_of_displays",
     )
-    list_editable = ("state",)
+    list_editable = ("state", "is_verified",)
     search_fields = ("comment",)
     list_filter = (
         "last_active_at",
