@@ -1,16 +1,16 @@
 from apps.trips.serializers import (
-    TripRequestPublicSerializer,
+    TripRequestListSerializer,
     TripRequestStartingPointSerializer,
 )
 from packages.restframework.pagination import PageNumberPaginationWithPageCounter
 from rest_framework import viewsets
 
-__all__ = ["TripRequestStartingPointViewSet"]
+__all__ = ["WaitingPassengerViewSet"]
 
 
-class TripRequestStartingPointViewSet(viewsets.ReadOnlyModelViewSet):
-    serializer_class = TripRequestPublicSerializer
-    model = TripRequestPublicSerializer.Meta.model
+class WaitingPassengerViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = TripRequestListSerializer
+    model = TripRequestListSerializer.Meta.model
     queryset = model.objects.active()
     pagination_class = PageNumberPaginationWithPageCounter
 

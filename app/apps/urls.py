@@ -25,31 +25,10 @@ from drf_spectacular.views import (
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    # TODO: DROP FROM THERE
     path(
-        "api/accounts/2022-03-02/",
-        include("apps.accounts.urls", namespace="accounts-outdated"),
+        "api/2022-03-05/operations/",
+        include("apps.operations.urls", namespace="operations"),
     ),
-    path(
-        "api/trips/2022-03-02/",
-        include("apps.trips.urls_outdated", namespace="trips-outdated"),
-    ),
-    path(
-        "api/docs/2022-03-02/schema/",
-        SpectacularAPIView.as_view(),
-        name="schema-outdated",
-    ),
-    path(
-        "api/docs/2022-03-02/schema/swagger/",
-        SpectacularSwaggerView.as_view(url_name="schema"),
-        name="swagger-ui-outdated",
-    ),
-    path(
-        "api/docs/2022-03-02/schema/redoc/",
-        SpectacularRedocView.as_view(url_name="schema"),
-        name="redoc-outdated",
-    ),
-    # TODO: DROP TO HERE
     path(
         "api/2022-03-05/accounts/", include("apps.accounts.urls", namespace="accounts")
     ),

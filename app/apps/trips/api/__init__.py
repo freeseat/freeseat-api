@@ -1,2 +1,2 @@
-from apps.trips.api.starting_points import *
-from apps.trips.api.trip_requests import *
+from apps.trips.api.driver import *
+from apps.trips.api.passenger import *

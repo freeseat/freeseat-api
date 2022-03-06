@@ -1,3 +1,4 @@
+from apps.trips.enums import LuggageSize, TripState
 from django.contrib.gis.db import models
 from django.urls import reverse
 from django.utils import timezone
@@ -11,10 +12,11 @@ __all__ = ["TripRequest"]
 class TripRequestManager(models.Manager):
     def active(self):
         now = timezone.now()
-        past_24_hours = now - timezone.timedelta(hours=24)
+        past_24_hours = now - timezone.timedelta(hours=48)
 
+        # TODO: move to QuerySet
         return self.model.objects.filter(
-            state=self.model.TripRequestState.ACTIVE,
+            state=TripState.ACTIVE,
             last_active_at__gte=past_24_hours,
         )
 
@@ -41,7 +43,6 @@ class TripRequest(AbstractUUIDModel, GeoItem):
         db_index=True,
         null=True,
         blank=True,
-        editable=False,
     )
 
     created_at = models.DateTimeField(
@@ -71,18 +72,11 @@ class TripRequest(AbstractUUIDModel, GeoItem):
         related_name="+",
     )
 
-    class TripRequestState(models.TextChoices):
-        ACTIVE = "active", _("active")
-        CANCELLED = "cancelled", _("cancelled")
-        COMPLETED = "completed", _("completed")
-        OUTDATED = "outdated", _("outdated")
-        INVALID = "invalid", _("invalid")
-
     state = models.CharField(
         max_length=32,
         verbose_name=_("state"),
-        default=TripRequestState.ACTIVE,
-        choices=TripRequestState.choices,
+        default=TripState.ACTIVE,
+        choices=TripState.choices,
         db_index=True,
     )
 
@@ -97,11 +91,6 @@ class TripRequest(AbstractUUIDModel, GeoItem):
         default=False,
         db_index=True,
     )
-
-    class LuggageSize(models.IntegerChoices):
-        SMALL_BAGS = 1, _("small bags")
-        LARGE_BAGS = 2, _("large bags")
-        CARGO = 3, _("cargo")
 
     luggage_size = models.PositiveSmallIntegerField(
         verbose_name=_("luggage size"),

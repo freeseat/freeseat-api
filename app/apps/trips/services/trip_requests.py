@@ -1,4 +1,8 @@
-from apps.trips.models import Trip, TripRequest, WayPoint
+from apps.accounts.models import Language
+from apps.comments.models import Comment
+from apps.logs.models import TripRequestSearchLog
+from apps.trips.enums import TripState
+from apps.trips.models import Trip, TripRequest, TripRequestReport, WayPoint
 from django.db import transaction
 from django.utils import timezone
 
@@ -68,22 +72,97 @@ class TripRequestService:
         trip_requests.update(last_active_at=now)
 
     @classmethod
+    @transaction.atomic
     def _change_trip_request_state(
-        cls, trip_request: TripRequest, to_state: TripRequest.TripRequestState
+        cls,
+        trip_request: TripRequest,
+        to_state: TripState,
+        comment: str,
+        report: dict,
     ) -> TripRequest:
         trip_request.state = to_state
         trip_request.save(update_fields=["state"])
 
+        if comment:
+            Comment.objects.create(content=comment, content_object=trip_request)
+
+        if report:
+            TripRequestReport.objects.create(trip_request=trip_request, **report)
+
         return trip_request
 
     @classmethod
-    def cancel_requested_trip(cls, trip_request: TripRequest) -> TripRequest:
+    def cancel_requested_trip(
+        cls, trip_request: TripRequest, data: dict
+    ) -> TripRequest:
         return cls._change_trip_request_state(
-            trip_request, TripRequest.TripRequestState.CANCELLED
+            trip_request,
+            TripState.CANCELLED,
+            data.get("comment"),
+            data.get("report"),
         )
 
     @classmethod
-    def complete_requested_trip(cls, trip_request: TripRequest) -> TripRequest:
+    def complete_requested_trip(
+        cls, trip_request: TripRequest, data: dict
+    ) -> TripRequest:
         return cls._change_trip_request_state(
-            trip_request, TripRequest.TripRequestState.COMPLETED
+            trip_request,
+            TripState.COMPLETED,
+            data.get("comment"),
+            data.get(
+                "report",
+            ),
         )
+
+    @classmethod
+    def log_trip_request_search(
+        cls,
+        user_session=None,
+        point=None,
+        area=None,
+        radius=None,
+        number_of_people=None,
+        with_pets=None,
+        luggage_size=None,
+        spoken_languages=None,
+        results=None,
+    ):
+        if with_pets == "true":
+            with_pets = True
+        elif with_pets == "false":
+            with_pets = False
+        elif with_pets == "unknown":
+            with_pets = None
+
+        if not user_session:
+            user_session = None
+
+        if not number_of_people:
+            number_of_people = None
+
+        if not luggage_size:
+            luggage_size = None
+
+        try:
+            trip_request_search_log = TripRequestSearchLog.objects.create(
+                user_session_id=user_session,
+                point=point,
+                radius=radius,
+                area=area,
+                number_of_people=number_of_people,
+                with_pets=with_pets,
+                luggage_size=luggage_size,
+                number_of_results=results.count(),
+            )
+
+            if spoken_languages:
+                spoken_languages = spoken_languages.split(",")
+                languages = Language.objects.filter(code__in=spoken_languages)
+                trip_request_search_log.spoken_languages.set(languages)
+
+            if results:
+                trip_request_search_log.results.set(results)
+
+        except ValueError:
+            pass

@@ -3,17 +3,18 @@ from apps.trips.models import TripRequest
 from apps.trips.serializers.waypoints import WayPointSerializer
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.validators import ValidationError
 from rest_framework_gis.fields import GeometryField
 
 __all__ = [
-    "TripRequestPublicSerializer",
-    "TripRequestPrivateSerializer",
+    "TripRequestListSerializer",
     "TripRequestCreateSerializer",
+    "TripRequestStateChangeSerializer",
 ]
 
 
-class TripRequestPublicSerializer(serializers.ModelSerializer):
+class TripRequestListSerializer(serializers.ModelSerializer):
     waypoints = WayPointSerializer(source="trip.waypoints", many=True, allow_null=True)
     route_length = serializers.FloatField(source="trip.route_length", allow_null=True)
     route = GeometryField(write_only=True, source="trip.route", allow_null=True)
@@ -34,6 +35,7 @@ class TripRequestPublicSerializer(serializers.ModelSerializer):
     class Meta:
         model = TripRequest
         read_only_fields = [
+            "id",
             "last_active_at",
             "distance_in_km",
         ]
@@ -50,12 +52,7 @@ class TripRequestPublicSerializer(serializers.ModelSerializer):
         ]
 
 
-class TripRequestPrivateSerializer(TripRequestPublicSerializer):
-    class Meta(TripRequestPublicSerializer.Meta):
-        fields = TripRequestPublicSerializer.Meta.fields + ["id"]
-
-
-class TripRequestCreateSerializer(TripRequestPrivateSerializer):
+class TripRequestCreateSerializer(TripRequestListSerializer):
     user_session = serializers.PrimaryKeyRelatedField(
         write_only=True, queryset=UserSession.objects.all(), required=False
     )
@@ -69,5 +66,27 @@ class TripRequestCreateSerializer(TripRequestPrivateSerializer):
 
         return attrs
 
-    class Meta(TripRequestPrivateSerializer.Meta):
-        fields = TripRequestPrivateSerializer.Meta.fields + ["user_session"]
+    class Meta(TripRequestListSerializer.Meta):
+        fields = TripRequestListSerializer.Meta.fields + ["user_session"]
+
+
+class TripRequestStateChangeSerializer(serializers.ModelSerializer):
+    comment = serializers.CharField(required=False)
+    result = serializers.CharField(source="report.result", required=False)
+    satisfaction_rate = serializers.IntegerField(
+        source="report.satisfaction_rate", required=False
+    )
+
+    def validate_user_session(self, user_session):
+        if self.instance.user_session != user_session:
+            raise PermissionDenied
+        return user_session
+
+    class Meta:
+        model = TripRequest
+        fields = [
+            "user_session",
+            "result",
+            "satisfaction_rate",
+            "comment",
+        ]

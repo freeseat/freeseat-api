@@ -1,3 +1,4 @@
+# TODO: drop file
 from apps.accounts.models import Language
 from rest_framework import serializers
 

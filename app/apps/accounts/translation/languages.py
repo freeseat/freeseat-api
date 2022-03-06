@@ -1,3 +1,4 @@
+# TODO: drop file
 import simple_history
 from apps.accounts.models import Language
 from modeltranslation.translator import TranslationOptions, register

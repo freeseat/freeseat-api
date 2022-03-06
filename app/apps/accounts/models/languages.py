@@ -1,3 +1,4 @@
+# TODO: drop file
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -20,6 +21,7 @@ class Language(models.Model):
         verbose_name=_("created by"),
         to="accounts.User",
         on_delete=models.SET_NULL,
+        related_name="+",
         null=True,
         editable=False,
         db_index=True,

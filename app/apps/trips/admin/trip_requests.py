@@ -1,5 +1,9 @@
 from apps.trips.models import TripRequest
 from django.contrib.gis import admin
+from django.db.models import Count
+from django.urls import reverse
+from django.utils.html import format_html
+from django.utils.translation import gettext_lazy as _
 from django_admin_geomap import ModelAdmin as GeoMapModelAdmin
 from packages.django.contrib.admin import CreatedByUserAdminMixin
 from simple_history.admin import SimpleHistoryAdmin
@@ -19,12 +23,16 @@ class TripRequestAdmin(
         "with_pets",
         "luggage_size",
         "allow_partial_trip",
+        "link_to_trip",
         "state",
         "comment",
+        "number_of_displays",
     )
     list_editable = ("state",)
     search_fields = ("comment",)
     list_filter = (
+        "last_active_at",
+        "created_at",
         "spoken_languages",
         "with_pets",
         "luggage_size",
@@ -49,3 +57,21 @@ class TripRequestAdmin(
         if not obj:
             return ("state",)
         return super().get_readonly_fields(request, obj)
+
+    @admin.display(description=_("trip"))
+    def link_to_trip(self, obj):
+        if obj.trip:
+            link = reverse("admin:trips_trip_change", args=[obj.trip_id])
+            return format_html('<a href="%s">%s</a>' % (link, obj.trip))
+
+    def number_of_displays(self, obj):
+        return obj.number_of_displays
+
+    number_of_displays.admin_order_field = "number_of_displays"
+
+    def get_queryset(self, request):
+        # TODO: move to QuerySet
+        qs = (
+            super().get_queryset(request).annotate(number_of_displays=Count("displays"))
+        )
+        return qs

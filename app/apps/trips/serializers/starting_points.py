@@ -10,4 +10,5 @@ class TripRequestStartingPointSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "starting_point",
+            "number_of_people",
         ]
