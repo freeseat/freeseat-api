@@ -62,7 +62,7 @@ class DriverTripRequestAPIViewSet(viewsets.ReadOnlyModelViewSet):
             )
 
             if radius:
-                area = with_metric_buffer(location, int(radius) * 1000, map_srid=4326)
+                area = with_metric_buffer(location, int(radius) * 1000)
                 qs = qs.filter(starting_point__coveredby=area)
 
         qs = super().filter_queryset(qs)

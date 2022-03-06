@@ -21,7 +21,6 @@ class TripRequestSearchLogAdmin(
         "number_of_results",
     )
     list_filter = (
-        "number_of_results",
         "with_pets",
         "luggage_size",
         "number_of_people",

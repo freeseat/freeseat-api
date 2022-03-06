@@ -117,7 +117,7 @@ class TripRequestService:
 
         try:
             trip_request_search_log = TripRequestSearchLog.objects.create(
-                user_session=user_session,
+                user_session_id=user_session,
                 point=point,
                 radius=radius,
                 area=area,
@@ -135,5 +135,5 @@ class TripRequestService:
             if results:
                 trip_request_search_log.results.set(results)
 
-        except ValueError:
+        except ValueError as e:
             pass

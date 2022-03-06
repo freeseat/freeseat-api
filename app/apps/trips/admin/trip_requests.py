@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from django_admin_geomap import ModelAdmin as GeoMapModelAdmin
 from packages.django.contrib.admin import CreatedByUserAdminMixin
 from simple_history.admin import SimpleHistoryAdmin
+from django.db.models import Count
 
 __all__ = ["TripRequestAdmin"]
 
@@ -25,6 +26,7 @@ class TripRequestAdmin(
         "link_to_trip",
         "state",
         "comment",
+        "number_of_displays",
     )
     list_editable = ("state",)
     search_fields = ("comment",)
@@ -59,3 +61,14 @@ class TripRequestAdmin(
         if obj.trip:
             link = reverse("admin:trips_trip_change", args=[obj.trip_id])
             return format_html('<a href="%s">%s</a>' % (link, obj.trip))
+
+    def number_of_displays(self, obj):
+        return obj.number_of_displays
+
+    number_of_displays.admin_order_field = 'number_of_displays'
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request).annotate(
+            number_of_displays=Count('displays')
+        )
+        return qs

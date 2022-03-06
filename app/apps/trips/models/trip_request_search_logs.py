@@ -84,7 +84,7 @@ class TripRequestSearchLog(AbstractUUIDModel, GeoItem):
     results = models.ManyToManyField(
         verbose_name=_("results"),
         to="trips.TripRequest",
-        related_name=_("was_found_by_search"),
+        related_name=_("displays"),
     )
 
     class Meta:
