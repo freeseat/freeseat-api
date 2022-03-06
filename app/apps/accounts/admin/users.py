@@ -32,3 +32,20 @@ class UserAdmin(SimpleHistoryAdmin, UserAdmin):
         if not obj:
             return ()
         return super().get_readonly_fields(request, obj)
+
+    def get_exclude_fields(self, request, object):
+        if not request.user.is_superuser:
+            return self.exclude + (
+                "staff_status",
+                "is_active",
+                "superuser_status",
+            )
+
+    def has_change_permission(self, request, obj=None):
+        if obj and obj.is_superuser:
+            return True
+
+        if obj == request.user:
+            return True
+
+        return False
