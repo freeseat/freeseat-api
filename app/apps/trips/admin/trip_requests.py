@@ -20,9 +20,10 @@ class TripRequestAdmin(
         "luggage_size",
         "allow_partial_trip",
         "state",
+        "is_verified",
         "comment",
     )
-    list_editable = ("state",)
+    list_editable = ("state", "is_verified",)
     search_fields = ("comment",)
     list_filter = (
         "spoken_languages",
