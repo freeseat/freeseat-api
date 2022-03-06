@@ -1,12 +1,12 @@
 from apps.trips.models import TripRequest
 from django.contrib.gis import admin
+from django.db.models import Count
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 from django_admin_geomap import ModelAdmin as GeoMapModelAdmin
 from packages.django.contrib.admin import CreatedByUserAdminMixin
 from simple_history.admin import SimpleHistoryAdmin
-from django.db.models import Count
 
 __all__ = ["TripRequestAdmin"]
 
@@ -31,6 +31,8 @@ class TripRequestAdmin(
     list_editable = ("state",)
     search_fields = ("comment",)
     list_filter = (
+        "last_active_at",
+        "created_at",
         "spoken_languages",
         "with_pets",
         "luggage_size",
@@ -65,11 +67,11 @@ class TripRequestAdmin(
     def number_of_displays(self, obj):
         return obj.number_of_displays
 
-    number_of_displays.admin_order_field = 'number_of_displays'
+    number_of_displays.admin_order_field = "number_of_displays"
 
     def get_queryset(self, request):
         # TODO: move to QuerySet
-        qs = super().get_queryset(request).annotate(
-            number_of_displays=Count('displays')
+        qs = (
+            super().get_queryset(request).annotate(number_of_displays=Count("displays"))
         )
         return qs

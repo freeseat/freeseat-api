@@ -6,7 +6,6 @@ from apps.trips.serializers import (
 )
 from apps.trips.services import TripRequestService
 from django.db import transaction
-from django.utils import timezone
 from packages.restframework.pagination import PageNumberPaginationWithPageCounter
 from rest_framework import mixins, permissions, status, viewsets
 from rest_framework.decorators import action
@@ -36,8 +35,6 @@ class PassengerTripRequestAPIViewSet(
         }.get(self.action, TripRequestCreateSerializer)
 
     def get_queryset(self):
-        now = timezone.now()
-
         qs = self.model.objects.active()
 
         if self.action == "list":
@@ -45,8 +42,6 @@ class PassengerTripRequestAPIViewSet(
 
             try:
                 user_session = UserSession.objects.get(id=user_session_id)
-                user_session.last_active_at = now
-                user_session.save(update_fields=["last_active_at"])
                 qs = qs.filter(user_session=user_session)
             except UserSession.DoesNotExist:
                 return qs.none()

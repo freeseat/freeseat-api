@@ -9,11 +9,7 @@ __all__ = []
 
 @admin.register(Trip)
 class TripAdmin(CreatedByUserAdminMixin, SimpleHistoryAdmin, admin.GeoModelAdmin):
-    list_display = (
-        "id",
-        "created_at",
-    )
-    date_hierarchy = "created_at"
+    list_display = ("id",)
     inlines = [WayPointInline]
     readonly_fields = (
         "id",
