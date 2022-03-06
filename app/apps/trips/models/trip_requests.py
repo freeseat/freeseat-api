@@ -12,7 +12,7 @@ __all__ = ["TripRequest"]
 class TripRequestManager(models.Manager):
     def active(self):
         now = timezone.now()
-        past_24_hours = now - timezone.timedelta(hours=24)
+        past_24_hours = now - timezone.timedelta(hours=48)
 
         # TODO: move to QuerySet
         return self.model.objects.filter(
