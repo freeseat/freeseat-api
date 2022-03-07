@@ -22,14 +22,17 @@ class PointOfInterestDetailSerializer(serializers.ModelSerializer):
         model = PointOfInterest
         fields = [
             "id",
+            "url",
             "name_en",
             "name_ru",
             "name_uk",
             "name_pl",
+            "name_de",
             "description_en",
             "description_ru",
             "description_uk",
             "description_pl",
+            "description_de",
             "point",
             "category",
         ]

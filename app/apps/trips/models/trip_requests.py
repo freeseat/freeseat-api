@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django_admin_geomap import GeoItem
+from packages.django.db import PhoneNumberField
 from packages.django.db.models import AbstractUUIDModel
 
 __all__ = ["TripRequest"]
@@ -12,13 +13,15 @@ __all__ = ["TripRequest"]
 class TripRequestManager(models.Manager):
     def active(self):
         now = timezone.now()
-        past_24_hours = now - timezone.timedelta(hours=48)
-
         # TODO: move to QuerySet
         return self.model.objects.filter(
             state=TripState.ACTIVE,
-            last_active_at__gte=past_24_hours,
+            active_until__gte=now,
         )
+
+
+def get_default_active_until():
+    return timezone.now() + timezone.timedelta(days=1)
 
 
 class TripRequest(AbstractUUIDModel, GeoItem):
@@ -56,6 +59,12 @@ class TripRequest(AbstractUUIDModel, GeoItem):
         verbose_name=_("updated at"),
         auto_now=True,
         editable=False,
+        db_index=True,
+    )
+
+    active_until = models.DateTimeField(
+        verbose_name=_("active until"),
+        default=get_default_active_until,
         db_index=True,
     )
 
@@ -132,10 +141,23 @@ class TripRequest(AbstractUUIDModel, GeoItem):
         db_index=True,
     )
 
+    phone_number = PhoneNumberField(
+        verbose_name=_("phone number"),
+        db_index=True,
+        null=True,
+        blank=True,
+    )
+
     class Meta:
         verbose_name = _("trip request")
         verbose_name_plural = _("trip requests")
-        ordering = ("-trip__route_length", "-created_at")
+        ordering = ("-trip__route_length", "-updated_at")
+
+    @property
+    def active_for(self):
+        now = timezone.now()
+        if self.active_until > now:
+            return (self.active_until - timezone.now()).seconds
 
     @property
     def geomap_longitude(self):

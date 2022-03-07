@@ -8,10 +8,10 @@ __all__ = ["ContactInformation"]
 
 class ContactInformation(AbstractUUIDModel):
     first_name = models.CharField(
-        verbose_name=_("first name"), max_length=64, db_index=True
+        verbose_name=_("first name"), max_length=64, default="", blank=True, db_index=True
     )
     last_name = models.CharField(
-        verbose_name=_("last name"), max_length=64, db_index=True
+        verbose_name=_("last name"), max_length=64, default="", blank=True, db_index=True
     )
     phone_number = PhoneNumberField(verbose_name=_("phone number"), db_index=True)
     email = models.EmailField(

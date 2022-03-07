@@ -88,6 +88,15 @@ class TripRequestFilter(filterset.FilterSet):
         """Filtering is happening in PageNumberPaginationWithPageCounter."""
         return queryset
 
+    return_routes = filters.BooleanFilter(
+        label=_("return routes"),
+        method="filter_by_return_routes",
+    )
+
+    def filter_by_return_routes(self, queryset, name, value):
+        """Determines, whether the route should be returned in search results or not."""
+        return queryset
+
     class Meta:
         model = TripRequest
         fields = [
@@ -95,7 +104,6 @@ class TripRequestFilter(filterset.FilterSet):
             "spoken_languages",
             "with_pets",
             "number_of_people",
-            "with_pets",
             "luggage_size",
             "lon",
             "lat",

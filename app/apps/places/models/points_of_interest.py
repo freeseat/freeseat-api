@@ -24,7 +24,9 @@ class PointOfInterest(AbstractUUIDModel, GeoItem):
         null=True,
     )
 
-    name = models.CharField(verbose_name=_("name"), max_length=255, db_index=True)
+    name = models.CharField(
+        verbose_name=_("name"), default="", max_length=255, db_index=True
+    )
     description = models.TextField(
         verbose_name=_("description"), blank=True, default=""
     )
@@ -38,6 +40,8 @@ class PointOfInterest(AbstractUUIDModel, GeoItem):
         geography=True,
         spatial_index=True,
     )
+
+    url = models.URLField(verbose_name=_("url"), null=True, blank=True)
 
     category = models.ForeignKey(
         verbose_name=_("category"),

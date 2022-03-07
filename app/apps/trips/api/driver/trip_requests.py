@@ -1,9 +1,9 @@
 from apps.trips.enums import LuggageSize
 from apps.trips.filters import TripRequestFilter
 from apps.trips.serializers import (
+    TripRequestSearchSerializer,
     TripRequestDetailSerializer,
     TripRequestListSerializer,
-    TripRequestSearchSerializer,
 )
 from apps.trips.services import TripRequestService
 from django.contrib.gis.db.models.functions import Distance
@@ -16,6 +16,7 @@ from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from geojson.geometry import LineString
+
 
 __all__ = ["DriverTripRequestAPIViewSet"]
 
@@ -42,6 +43,9 @@ class DriverTripRequestAPIViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.AllowAny]
 
     def get_serializer_class(self):
+        if self.request.query_params.get("return_routes", False) == "true":
+            return TripRequestDetailSerializer
+
         return {
             "search": TripRequestSearchSerializer,
             "detail": TripRequestDetailSerializer,
@@ -128,7 +132,7 @@ class DriverTripRequestAPIViewSet(viewsets.ReadOnlyModelViewSet):
         print(driver_route)
 
         qs = qs.filter(
-            # Q(trip_id__in=RawSQL(f"SELECT * FROM match_partial_trips(ARRAY[{allow_partial_trip}]::uuid[], %s, {max_deviation_meters})", [str(driver_route)]))
+            Q(trip_id__in=RawSQL(f"SELECT * FROM match_partial_trips(ARRAY[{allow_partial_trip}]::uuid[], %s, {max_deviation_meters})", [str(driver_route)])) |
             Q(trip_id__in=RawSQL(f"SELECT * FROM match_entire_trips(ARRAY[{full_trip_only}]::uuid[], %s, {max_deviation_meters})", [str(driver_route)]))
         )
 
