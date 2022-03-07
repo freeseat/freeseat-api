@@ -140,7 +140,7 @@ class TripRequest(AbstractUUIDModel, GeoItem):
         db_index=True,
     )
 
-    contact_information = models.ForeignKey(
+    contact_information = models.OneToOneField(
         verbose_name=_("contact_information"),
         to="accounts.ContactInformation",
         on_delete=models.CASCADE,
@@ -162,7 +162,7 @@ class TripRequest(AbstractUUIDModel, GeoItem):
     @property
     def phone_number(self):
         if self.contact_information:
-            return self.contact_information().phone_number
+            return self.contact_information.phone_number
         return None
 
     @property
