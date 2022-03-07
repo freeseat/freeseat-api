@@ -5,6 +5,11 @@ __all__ = ["Country"]
 
 
 class Country(models.Model):
+    code = models.CharField(
+        verbose_name=_("code"),
+        primary_key=True,
+        max_length=3,
+    )
     created_at = models.DateTimeField(
         verbose_name=_("created at"),
         auto_now_add=True,
@@ -23,11 +28,6 @@ class Country(models.Model):
         editable=False,
         null=True,
         blank=True,
-    )
-    code = models.CharField(
-        verbose_name=_("code"),
-        max_length=2,
-        db_index=True,
     )
     name = models.CharField(verbose_name=_("name"), max_length=255, db_index=True)
     territory = models.MultiPolygonField(
