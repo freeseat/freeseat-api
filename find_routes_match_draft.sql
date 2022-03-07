@@ -1,6 +1,6 @@
 CREATE OR REPLACE FUNCTION match_partial_trips(
     trip_ids uuid[],
-    driver_route_geojson VARCHAR,
+    driver_route_text VARCHAR,
     driver_max_deviation_meters REAL
 )
     RETURNS TABLE
@@ -10,7 +10,7 @@ CREATE OR REPLACE FUNCTION match_partial_trips(
 AS
 $$
 DECLARE
-    driver_route_geom geometry  := st_geomfromgeojson(driver_route_geojson);
+    driver_route_geom geometry  := st_geomfromtext(driver_route_text);
     driver_route      geography := driver_route_geom::geography;
 BEGIN
     RETURN QUERY
@@ -92,10 +92,9 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql STABLE;
 
-
 CREATE OR REPLACE FUNCTION match_entire_trip(
     trip_ids uuid[],
-    driver_route_geojson VARCHAR,
+    driver_route_text VARCHAR,
     driver_max_deviation_meters REAL
 )
     RETURNS TABLE
@@ -105,7 +104,7 @@ CREATE OR REPLACE FUNCTION match_entire_trip(
 AS
 $$
 DECLARE
-    driver_route_geom geometry  := st_geomfromgeojson(driver_route_geojson);
+    driver_route_geom geometry  := st_geomfromtext(driver_route_text);
     driver_route      geography := driver_route_geom::geography;
 BEGIN
     RETURN QUERY
