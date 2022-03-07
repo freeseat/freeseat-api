@@ -1,4 +1,4 @@
-from apps.accounts.models import Language, ContactInformation
+from apps.accounts.models import Language
 from apps.comments.models import Comment
 from apps.logs.models import TripRequestSearchLog
 from apps.trips.enums import TripState
@@ -17,13 +17,6 @@ class TripRequestService:
         waypoints = trip_data.pop("waypoints")
         spoken_languages = data.pop("spoken_languages")
 
-        contact_information = data.pop("contact_information", None)
-
-        if contact_information:
-            contact_information = ContactInformation.objects.create(
-                **contact_information
-            )
-
         active_for = data.get("active_for", 24 * 60 * 60)
 
         active_until = timezone.now() + timezone.timedelta(seconds=active_for)
@@ -40,7 +33,7 @@ class TripRequestService:
         data["trip"] = trip
         data["starting_point"] = trip.waypoints.first().point
 
-        trip_request = TripRequest.objects.create(active_until=active_until, contact_information=contact_information, **data)
+        trip_request = TripRequest.objects.create(active_until=active_until, **data)
         trip_request.spoken_languages.set(spoken_languages)
 
         return trip_request
@@ -53,8 +46,6 @@ class TripRequestService:
         trip_data = data.pop("trip")
         waypoints = trip_data.pop("waypoints")
         spoken_languages = data.pop("spoken_languages")
-
-        contact_information = data.pop("contact_information")
 
         trip = trip_request.trip
 
@@ -73,16 +64,6 @@ class TripRequestService:
 
         TripRequest.objects.filter(id=trip_request.id).update(**data)
         trip_request.spoken_languages.set(spoken_languages)
-
-        if contact_information:
-            if trip_request.contact_information:
-                ContactInformation.objects.filter(id=trip_request.contact_information_id)
-            else:
-                contact_information = ContactInformation.objects.create(
-                    **contact_information
-                )
-                trip_request.contact_information = contact_information
-                trip_request.save(update_fields=["contact_information"])
 
         trip_request.refresh_from_db()
 

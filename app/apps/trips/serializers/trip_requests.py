@@ -1,5 +1,4 @@
 from apps.accounts.models import UserSession
-from apps.accounts.serializers import ContactInformationSerializer
 from apps.trips.models import TripRequest
 from apps.trips.serializers.waypoints import WayPointSerializer
 from django.utils.translation import gettext_lazy as _
@@ -7,7 +6,6 @@ from rest_framework import serializers
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.validators import ValidationError
 from rest_framework_gis.fields import GeometryField
-
 
 __all__ = [
     "TripRequestListSerializer",
@@ -26,7 +24,6 @@ class TripRequestListSerializer(serializers.ModelSerializer):
     distance_in_km = serializers.FloatField(
         source="distance.km", read_only=True, default=None
     )
-    contact_information = ContactInformationSerializer(required=False)
 
     def validate_waypoints(self, waypoints):
         if len(waypoints) < 2:
@@ -50,7 +47,7 @@ class TripRequestListSerializer(serializers.ModelSerializer):
             "number_of_people",
             "with_pets",
             "comment",
-            "contact_information",
+            "phone_number",
             "luggage_size",
             "waypoints",
             "route_length",

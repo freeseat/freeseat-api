@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django_admin_geomap import GeoItem
+from packages.django.db import PhoneNumberField
 from packages.django.db.models import AbstractUUIDModel
 
 __all__ = ["TripRequest"]
@@ -140,10 +141,9 @@ class TripRequest(AbstractUUIDModel, GeoItem):
         db_index=True,
     )
 
-    contact_information = models.OneToOneField(
-        verbose_name=_("contact_information"),
-        to="accounts.ContactInformation",
-        on_delete=models.CASCADE,
+    phone_number = PhoneNumberField(
+        verbose_name=_("phone number"),
+        db_index=True,
         null=True,
         blank=True,
     )
@@ -158,12 +158,6 @@ class TripRequest(AbstractUUIDModel, GeoItem):
         now = timezone.now()
         if self.active_until > now:
             return (self.active_until - timezone.now()).seconds
-
-    @property
-    def phone_number(self):
-        if self.contact_information:
-            return self.contact_information.phone_number
-        return None
 
     @property
     def geomap_longitude(self):
