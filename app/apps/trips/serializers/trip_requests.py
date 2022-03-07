@@ -12,6 +12,8 @@ __all__ = [
     "TripRequestDetailSerializer",
     "TripRequestCreateSerializer",
     "TripRequestStateChangeSerializer",
+    "TripRequestExtendSerializer",
+    "TripRequestPassengerSerializer",
 ]
 
 
@@ -61,6 +63,7 @@ class TripRequestCreateSerializer(TripRequestListSerializer):
     user_session = serializers.PrimaryKeyRelatedField(
         write_only=True, queryset=UserSession.objects.all(), required=False
     )
+    active_for = serializers.IntegerField(required=False)
 
     def validate(self, attrs):
         if (user := self.context.get("request").user) and user.is_authenticated:
@@ -95,3 +98,24 @@ class TripRequestStateChangeSerializer(serializers.ModelSerializer):
             "satisfaction_rate",
             "comment",
         ]
+
+
+class TripRequestExtendSerializer(serializers.ModelSerializer):
+    extend_for = serializers.IntegerField()
+
+    def validate_user_session(self, user_session):
+        if self.instance.user_session != user_session:
+            raise PermissionDenied
+        return user_session
+
+    class Meta:
+        model = TripRequest
+        fields = [
+            "user_session",
+            "extend_for",
+        ]
+
+
+class TripRequestPassengerSerializer(TripRequestDetailSerializer):
+    class Meta(TripRequestDetailSerializer.Meta):
+        fields = TripRequestDetailSerializer.Meta.fields + ["active_for"]

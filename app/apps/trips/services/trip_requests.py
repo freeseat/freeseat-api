@@ -17,7 +17,11 @@ class TripRequestService:
         waypoints = trip_data.pop("waypoints")
         spoken_languages = data.pop("spoken_languages")
 
-        trip = Trip.objects.create(**trip_data)
+        active_for = data.get("active_for", 24)
+
+        active_until = timezone.now() + timezone.timedelta(hours=active_for)
+
+        trip = Trip.objects.create(active_until=active_until, **trip_data)
 
         for waypoint in waypoints:
             WayPoint.objects.create(
@@ -67,12 +71,6 @@ class TripRequestService:
 
     @classmethod
     @transaction.atomic
-    def actualize_trip_requests_list(cls, trip_requests: TripRequest.objects):
-        now = timezone.now()
-        trip_requests.update(last_active_at=now)
-
-    @classmethod
-    @transaction.atomic
     def _change_trip_request_state(
         cls,
         trip_request: TripRequest,
@@ -114,6 +112,25 @@ class TripRequestService:
                 "report",
             ),
         )
+
+    @classmethod
+    def extend_trip_request(
+        cls,
+        trip_request: TripRequest,
+        extend_for: int,
+    ) -> TripRequest:
+
+        if trip_request.active_for:
+            trip_request.active_until = trip_request.active_until + timezone.timedelta(
+                hours=extend_for
+            )
+        else:
+            trip_request.active_until = timezone.now() + timezone.timedelta(
+                hours=extend_for
+            )
+
+        trip_request.save(update_fields=["active_until", "updated_at"])
+        return trip_request
 
     @classmethod
     def log_trip_request_search(
