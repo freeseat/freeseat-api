@@ -17,9 +17,9 @@ class TripRequestService:
         waypoints = trip_data.pop("waypoints")
         spoken_languages = data.pop("spoken_languages")
 
-        active_for = data.get("active_for", 24)
+        active_for = data.get("active_for", 24 * 60 * 60)
 
-        active_until = timezone.now() + timezone.timedelta(hours=active_for)
+        active_until = timezone.now() + timezone.timedelta(seconds=active_for)
 
         trip = Trip.objects.create(active_until=active_until, **trip_data)
 
@@ -122,11 +122,11 @@ class TripRequestService:
 
         if trip_request.active_for:
             trip_request.active_until = trip_request.active_until + timezone.timedelta(
-                hours=extend_for
+                seconds=extend_for
             )
         else:
             trip_request.active_until = timezone.now() + timezone.timedelta(
-                hours=extend_for
+                seconds=extend_for
             )
 
         trip_request.save(update_fields=["active_until", "updated_at"])
