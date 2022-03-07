@@ -38,7 +38,8 @@ class PointOfInterestAdmin(
         "name",
     )
     autocomplete_fields = ("category",)
-    list_filter = ("is_active",)
+    list_filter = ("is_active", "category",)
+    search_fields = ("name", "description")
 
     geomap_default_longitude = "20"
     geomap_default_latitude = "50.05"

@@ -1,0 +1,245 @@
+[
+  {
+    "name": "Луганск",
+    "resource_url": "https://t.me/luhanskevaquation",
+    "description": "",
+    "point": {
+      "type": "Point",
+      "coordinates": [48.9531376,37.9080403]
+    }
+  },
+  {
+    "name": "Ивано-Франковск",
+    "resource_url": "https://t.me/+nzeP_stFB3I1MjU0",
+    "description": "",
+    "point": {
+      "type": "Point",
+      "coordinates": [48.9118242,24.6821097]
+    }
+  },
+  {
+    "name": "Запорожье",
+    "resource_url": "https://t.me/+ynRJn88RxgswYmU0",
+    "description": "",
+    "point": {
+      "type": "Point",
+      "coordinates": [47.8563229,35.1053141]
+    }
+  },
+  {
+    "name": "Ужгород",
+    "resource_url": "https://t.me/+5WlQQHIKJ4NjMGNk",
+    "description": "",
+    "point": {
+      "type": "Point",
+      "coordinates": [48.6194332,22.2446183]
+    }
+  },
+  {
+    "name": "Житомир",
+    "resource_url": "https://t.me/+QD2EEIJqf_xhYjQ8",
+    "description": "",
+    "point": {
+      "type": "Point",
+      "coordinates": [50.2679361,28.6386982]
+    }
+  },
+  {
+    "name": "Днепр",
+    "resource_url": "https://t.me/+LpQlRQvCas1jNmI0",
+    "description": "",
+    "point": {
+      "type": "Point",
+      "coordinates": [48.4624412,34.8602745]
+    }
+  },
+  {
+    "name": "Павлоград",
+    "resource_url": "https://t.me/pavlogradevak",
+    "description": "",
+    "point": {
+      "type": "Point",
+      "coordinates": [48.535204, 35.880994]
+    }
+  },
+  {
+    "name": "Луцк",
+    "resource_url": "https://t.me/+R49w2c4seXw5MzJk",
+    "description": "",
+    "point": {
+      "type": "Point",
+      "coordinates": [50.758798, 25.343777]
+    }
+  },
+  {
+    "name": "Винница",
+    "resource_url": "https://t.me/+LeEGgnB7RwcxYWI0",
+    "description": "",
+    "point": {
+      "type": "Point",
+      "coordinates": [49.224207, 28.472690]
+    }
+  },
+  {
+    "name": "Бердичев",
+    "resource_url": "https://t.me/+g1vCeKfEve5lNTM6",
+    "description": "",
+    "point": {
+      "type": "Point",
+      "coordinates": [49.897919, 28.574773]
+    }
+  },
+  {
+    "name": "Черкассы",
+    "resource_url": "https://t.me/EvacuationCherkasy",
+    "description": "",
+    "point": {
+      "type": "Point",
+      "coordinates": [49.434755, 32.075925]
+    }
+  },
+  {
+    "name": "Черновцы",
+    "resource_url": "https://t.me/evacuationChernovtsy",
+    "description": "",
+    "point": {
+      "type": "Point",
+      "coordinates": [48.314206, 25.938617]
+    }
+  },
+  {
+    "name": "Чернигов",
+    "resource_url": "https://t.me/+i1Np0FJLhs4zMzli",
+    "description": "",
+    "point": {
+      "type": "Point",
+      "coordinates": [51.493889, 31.294853]
+    }
+  },
+  {
+    "name": "Покровск",
+    "resource_url": "https://t.me/pokrovsk_don",
+    "description": "",
+    "point": {
+      "type": "Point",
+      "coordinates": [48.285802, 37.178499]
+    }
+  },
+  {
+    "name": "Киев",
+    "resource_url": "https://t.me/+68JG-qKNvm9kNjZi",
+    "description": "",
+    "point": {
+      "type": "Point",
+      "coordinates": [50.452444, 30.513078]
+    }
+  },
+  {
+    "name": "Хмельницкий",
+    "resource_url": "https://t.me/+qORus3EoBnEzZmNk",
+    "description": "",
+    "point": {
+      "type": "Point",
+      "coordinates": [49.418770, 26.998118]
+    }
+  },
+  {
+    "name": "Ровно",
+    "resource_url": "https://t.me/+hwq625pYpfUzOWI8",
+    "description": "",
+    "point": {
+      "type": "Point",
+      "coordinates": [50.619811, 26.246820]
+    }
+  },
+  {
+    "name": "Полтава",
+    "resource_url": "https://t.me/+AGqMw2Sl4ABjMmI0",
+    "description": "",
+    "point": {
+      "type": "Point",
+      "coordinates": [49.605376, 34.541348]
+    }
+  },
+  {
+    "name": "Сумы",
+    "resource_url": "https://t.me/+-oVnhuNnwpU1ZWVk",
+    "description": "",
+    "point": {
+      "type": "Point",
+      "coordinates": [50.906642, 34.803184]
+    }
+  },
+  {
+    "name": "Одесса",
+    "resource_url": "https://t.me/+Dg2rSrkmuN03NGFk",
+    "description": "",
+    "point": {
+      "type": "Point",
+      "coordinates": [46.481275, 30.703685]
+    }
+  },
+  {
+    "name": "Николаев",
+    "resource_url": "https://t.me/+isy_Cw5MrptmZjlk",
+    "description": "",
+    "point": {
+      "type": "Point",
+      "coordinates": [46.976542, 31.997446]
+    }
+  },
+  {
+    "name": "Львов",
+    "resource_url": "https://t.me/+UNdwIrUYEBgwOWE8",
+    "description": "",
+    "point": {
+      "type": "Point",
+      "coordinates": [49.843311, 24.026634]
+    }
+  },
+  {
+    "name": "Тернополь",
+    "resource_url": "https://t.me/+HK4nfvMpAeM1MWZk",
+    "description": "",
+    "point": {
+      "type": "Point",
+      "coordinates": [49.556785, 25.587539]
+    }
+  },
+  {
+    "name": "Кировоград",
+    "resource_url": "https://t.me/+z5TkEVbqiatkOGE0",
+    "description": "",
+    "point": {
+      "type": "Point",
+      "coordinates": [48.532387, 32.239694]
+    }
+  },
+  {
+    "name": "Белая Церковь",
+    "resource_url": "https://t.me/+A4vJpMa-iqY3NzJi",
+    "description": "",
+    "point": {
+      "type": "Point",
+      "coordinates": [49.806822, 30.127698]
+    }
+  },
+  {
+    "name": "Харьков",
+    "resource_url": "https://t.me/+vSsvEw-pfNA4NDdi",
+    "description": "",
+    "point": {
+      "type": "Point",
+      "coordinates": [49.987957, 36.233192]
+    }
+  },
+  {
+    "name": "Кривой Рог",
+    "resource_url": "https://t.me/+SguKJv2dQGRkM2Zk",
+    "description": "",
+    "point": {
+      "type": "Point",
+      "coordinates": [47.917314, 33.431907]
+    }
+  }
+]
