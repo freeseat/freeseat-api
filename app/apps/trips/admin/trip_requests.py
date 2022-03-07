@@ -27,6 +27,7 @@ class TripRequestAdmin(
         "state",
         "is_verified",
         "comment",
+        "phone_number",
         "number_of_displays",
     )
     list_editable = (
@@ -50,7 +51,7 @@ class TripRequestAdmin(
         "created_by",
         "user_session",
     )
-    raw_id_fields = ("trip",)
+    raw_id_fields = ("trip", "contact_information",)
     inlines = []
     date_hierarchy = "last_active_at"
     geomap_default_longitude = "20"

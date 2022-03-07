@@ -140,6 +140,14 @@ class TripRequest(AbstractUUIDModel, GeoItem):
         db_index=True,
     )
 
+    contact_information = models.ForeignKey(
+        verbose_name=_("contact_information"),
+        to="accounts.ContactInformation",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
+
     class Meta:
         verbose_name = _("trip request")
         verbose_name_plural = _("trip requests")
@@ -149,7 +157,13 @@ class TripRequest(AbstractUUIDModel, GeoItem):
     def active_for(self):
         now = timezone.now()
         if self.active_until > now:
-            return self.active_until - timezone.now()
+            return (self.active_until - timezone.now()).seconds
+
+    @property
+    def phone_number(self):
+        if self.contact_information:
+            return self.contact_information().phone_number
+        return None
 
     @property
     def geomap_longitude(self):
