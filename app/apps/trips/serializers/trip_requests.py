@@ -9,6 +9,7 @@ from rest_framework_gis.fields import GeometryField
 
 __all__ = [
     "TripRequestListSerializer",
+    "TripRequestDetailSerializer",
     "TripRequestCreateSerializer",
     "TripRequestStateChangeSerializer",
 ]
@@ -50,6 +51,10 @@ class TripRequestListSerializer(serializers.ModelSerializer):
             "route",
             "allow_partial_trip",
         ]
+
+
+class TripRequestDetailSerializer(TripRequestListSerializer):
+    route = GeometryField(source="trip.route", allow_null=True)
 
 
 class TripRequestCreateSerializer(TripRequestListSerializer):
