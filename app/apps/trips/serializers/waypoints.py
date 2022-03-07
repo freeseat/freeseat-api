@@ -5,6 +5,8 @@ __all__ = ["WayPointSerializer"]
 
 
 class WayPointSerializer(serializers.ModelSerializer):
+    country = serializers.CharField(read_only=True)
+
     class Meta:
         model = WayPoint
-        fields = ["order", "point"]
+        fields = ["order", "point", "country"]
