@@ -9,6 +9,7 @@ from rest_framework_gis.fields import GeometryField
 
 __all__ = [
     "TripRequestListSerializer",
+    "TripRequestDetailSerializer",
     "TripRequestCreateSerializer",
     "TripRequestStateChangeSerializer",
 ]
@@ -17,7 +18,8 @@ __all__ = [
 class TripRequestListSerializer(serializers.ModelSerializer):
     waypoints = WayPointSerializer(source="trip.waypoints", many=True, allow_null=True)
     route_length = serializers.FloatField(source="trip.route_length", allow_null=True)
-    route = GeometryField(write_only=True, source="trip.route", allow_null=True)
+    # TODO: make write only
+    route = GeometryField(source="trip.route", allow_null=True, default=None)
     distance_in_km = serializers.FloatField(
         source="distance.km", read_only=True, default=None
     )
@@ -50,6 +52,10 @@ class TripRequestListSerializer(serializers.ModelSerializer):
             "route",
             "allow_partial_trip",
         ]
+
+
+class TripRequestDetailSerializer(TripRequestListSerializer):
+    pass
 
 
 class TripRequestCreateSerializer(TripRequestListSerializer):

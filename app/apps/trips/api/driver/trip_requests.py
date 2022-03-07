@@ -1,11 +1,14 @@
+from apps.trips.enums import LuggageSize
 from apps.trips.filters import TripRequestFilter
 from apps.trips.serializers import (
+    TripRequestDetailSerializer,
     TripRequestListSerializer,
     TripRequestSearchSerializer,
 )
 from apps.trips.services import TripRequestService
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
+from django.db.models.expressions import Q, RawSQL
 from django_filters.rest_framework import DjangoFilterBackend
 from packages.math.metric_buffer import with_metric_buffer
 from packages.restframework.pagination import PageNumberPaginationWithPageCounter
@@ -38,9 +41,10 @@ class DriverTripRequestAPIViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.AllowAny]
 
     def get_serializer_class(self):
-        # if self.action == "search":
-        #     return TripRequestSearchSerializer
-        return super().get_serializer_class()
+        return {
+            "search": TripRequestSearchSerializer,
+            "detail": TripRequestDetailSerializer,
+        }.get(self.action, super().get_serializer_class())
 
     def get_queryset(self):
         qs = self.model.objects.active()
@@ -83,8 +87,62 @@ class DriverTripRequestAPIViewSet(viewsets.ReadOnlyModelViewSet):
 
         return qs
 
-    # @action(detail=False, methods=["post"], url_path="search")
-    # def search(self, request, *args, **kwargs):
-    #     serializer = self.get_serializer(data=request.data)
-    #     serializer.is_valid(raise_exception=True)
-    #     return Response()
+    @action(detail=False, methods=["post"], url_path="search")
+    def search(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        data = serializer.validated_data
+
+        qs = self.get_queryset()
+
+        driver_route = data.get("route")
+        max_deviation_meters = data.get("max_deviation") * 1000
+        spoken_languages = data.get("spoken_languages")
+        number_of_people = data.get("number_of_people")
+        luggage_size = data.get("luggage_size")
+
+        from shapely.geometry.linestring import LineString
+
+        driver_route = LineString(driver_route).svg()
+
+        with_pets = data.get("with_pets")
+        if not with_pets:
+            qs = qs.exclude(with_pets=True)
+
+        if luggage_size == LuggageSize.CARGO:
+            qs = qs.filter(luggage_size=luggage_size)
+        else:
+            qs = qs.filter(luggage_size__lte=luggage_size)
+
+        qs = qs.filter(
+            number_of_people__lte=number_of_people,
+            spoken_languages__in=spoken_languages,
+        )
+
+        allow_partial_trip = qs.filter(allow_partial_trip=True)
+
+        print(allow_partial_trip)
+
+        full_trip_only = qs.difference(allow_partial_trip).values_list("id", flat=True)
+
+        allow_partial_trip = list(allow_partial_trip.values_list("id", flat=True))
+        print(allow_partial_trip)
+        allow_partial_trip = ['6a6cae9d-beb4-41d5-90d2-c19f05f23dbd']
+        print("RUUUN")
+        print(driver_route)
+        qs = qs.filter(
+            Q(
+                trip_id__in=RawSQL(
+                    f"SELECT * FROM match_partial_trips(ARRAY [{allow_partial_trip}]::uuid[], {driver_route}, {max_deviation_meters})",
+                    [],
+                )
+            )
+            # Q(trip_id__in=RawSQL(f"SELECT * FROM match_partial_trips(ARRAY['e9cb4e16-c034-49da-a144-a7d7d401d73f', '3d613cc6-e68f-4c6a-a9e6-106f0fd876f8']::uuid[], {driver_route}, {max_deviation_meters});", [])) |\
+            # Q(trip_id__in=RawSQL(f"SELECT * FROM match_entire_script(ARRAY['e9cb4e16-c034-49da-a144-a7d7d401d73f', '3d613cc6-e68f-4c6a-a9e6-106f0fd876f8']::uuid[], {driver_route}, %s);", []))
+        )
+        print(qs)
+
+        serializer_class = self.get_serializer_class()
+
+        return Response(serializer_class(qs, many=True).data)
