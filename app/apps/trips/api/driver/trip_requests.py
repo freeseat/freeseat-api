@@ -1,22 +1,21 @@
 from apps.trips.enums import LuggageSize
 from apps.trips.filters import TripRequestFilter
 from apps.trips.serializers import (
-    TripRequestSearchSerializer,
     TripRequestDetailSerializer,
     TripRequestListSerializer,
+    TripRequestSearchSerializer,
 )
 from apps.trips.services import TripRequestService
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
 from django.db.models.expressions import Q, RawSQL
 from django_filters.rest_framework import DjangoFilterBackend
+from geojson.geometry import LineString
 from packages.math.metric_buffer import with_metric_buffer
 from packages.restframework.pagination import PageNumberPaginationWithPageCounter
-from rest_framework import permissions, status, viewsets
+from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from geojson.geometry import LineString
-
 
 __all__ = ["DriverTripRequestAPIViewSet"]
 
@@ -129,11 +128,20 @@ class DriverTripRequestAPIViewSet(viewsets.ReadOnlyModelViewSet):
         full_trip_only = list(full_trip_only.values_list("id", flat=True))
 
         driver_route = LineString(driver_route)
-        print(driver_route)
 
         qs = qs.filter(
-            Q(trip_id__in=RawSQL(f"SELECT * FROM match_partial_trips(ARRAY[{allow_partial_trip}]::uuid[], %s, {max_deviation_meters})", [str(driver_route)])) |
-            Q(trip_id__in=RawSQL(f"SELECT * FROM match_entire_trips(ARRAY[{full_trip_only}]::uuid[], %s, {max_deviation_meters})", [str(driver_route)]))
+            Q(
+                trip_id__in=RawSQL(
+                    f"SELECT * FROM match_partial_trips(ARRAY[{allow_partial_trip}]::uuid[], %s, {max_deviation_meters})",
+                    [str(driver_route)],
+                )
+            )
+            | Q(
+                trip_id__in=RawSQL(
+                    f"SELECT * FROM match_entire_trips(ARRAY[{full_trip_only}]::uuid[], %s, {max_deviation_meters})",
+                    [str(driver_route)],
+                )
+            )
         )
 
         serializer_class = self.get_serializer_class()
