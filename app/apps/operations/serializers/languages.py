@@ -13,4 +13,5 @@ class LanguageSerializer(serializers.ModelSerializer):
             "name_ru",
             "name_uk",
             "name_pl",
+            "name_de",
         ]

@@ -28,7 +28,9 @@ class POICategory(MP_Node):
         null=True,
     )
 
-    name = models.CharField(verbose_name=_("name"), max_length=255, db_index=True)
+    name = models.CharField(
+        verbose_name=_("name"), default="", max_length=255, db_index=True
+    )
     description = models.TextField(
         verbose_name=_("description"), default="", blank=True
     )
