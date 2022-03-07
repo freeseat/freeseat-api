@@ -75,7 +75,7 @@ class TripRequestCreateSerializer(TripRequestListSerializer):
         return attrs
 
     class Meta(TripRequestListSerializer.Meta):
-        fields = TripRequestListSerializer.Meta.fields + ["user_session"]
+        fields = TripRequestListSerializer.Meta.fields + ["user_session", "active_for"]
 
 
 class TripRequestStateChangeSerializer(serializers.ModelSerializer):
