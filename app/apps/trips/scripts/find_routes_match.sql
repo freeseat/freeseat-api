@@ -93,7 +93,7 @@ END;
 $$ LANGUAGE plpgsql STABLE;
 
 
-CREATE OR REPLACE FUNCTION match_entire_trip(
+CREATE OR REPLACE FUNCTION match_entire_trips(
     trip_ids uuid[],
     driver_route_geojson VARCHAR,
     driver_max_deviation_meters REAL

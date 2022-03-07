@@ -15,6 +15,7 @@ from packages.restframework.pagination import PageNumberPaginationWithPageCounte
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from geojson.geometry import LineString
 
 __all__ = ["DriverTripRequestAPIViewSet"]
 
@@ -102,10 +103,6 @@ class DriverTripRequestAPIViewSet(viewsets.ReadOnlyModelViewSet):
         number_of_people = data.get("number_of_people")
         luggage_size = data.get("luggage_size")
 
-        from shapely.geometry.linestring import LineString
-
-        driver_route = LineString(driver_route).svg()
-
         with_pets = data.get("with_pets")
         if not with_pets:
             qs = qs.exclude(with_pets=True)
@@ -122,26 +119,18 @@ class DriverTripRequestAPIViewSet(viewsets.ReadOnlyModelViewSet):
 
         allow_partial_trip = qs.filter(allow_partial_trip=True)
 
-        print(allow_partial_trip)
-
-        full_trip_only = qs.difference(allow_partial_trip).values_list("id", flat=True)
+        full_trip_only = qs.difference(allow_partial_trip)
 
         allow_partial_trip = list(allow_partial_trip.values_list("id", flat=True))
-        print(allow_partial_trip)
-        allow_partial_trip = ['6a6cae9d-beb4-41d5-90d2-c19f05f23dbd']
-        print("RUUUN")
+        full_trip_only = list(full_trip_only.values_list("id", flat=True))
+
+        driver_route = LineString(driver_route)
         print(driver_route)
+
         qs = qs.filter(
-            Q(
-                trip_id__in=RawSQL(
-                    f"SELECT * FROM match_partial_trips(ARRAY [{allow_partial_trip}]::uuid[], {driver_route}, {max_deviation_meters})",
-                    [],
-                )
-            )
-            # Q(trip_id__in=RawSQL(f"SELECT * FROM match_partial_trips(ARRAY['e9cb4e16-c034-49da-a144-a7d7d401d73f', '3d613cc6-e68f-4c6a-a9e6-106f0fd876f8']::uuid[], {driver_route}, {max_deviation_meters});", [])) |\
-            # Q(trip_id__in=RawSQL(f"SELECT * FROM match_entire_script(ARRAY['e9cb4e16-c034-49da-a144-a7d7d401d73f', '3d613cc6-e68f-4c6a-a9e6-106f0fd876f8']::uuid[], {driver_route}, %s);", []))
+            # Q(trip_id__in=RawSQL(f"SELECT * FROM match_partial_trips(ARRAY[{allow_partial_trip}]::uuid[], %s, {max_deviation_meters})", [str(driver_route)]))
+            Q(trip_id__in=RawSQL(f"SELECT * FROM match_entire_trips(ARRAY[{full_trip_only}]::uuid[], %s, {max_deviation_meters})", [str(driver_route)]))
         )
-        print(qs)
 
         serializer_class = self.get_serializer_class()
 
