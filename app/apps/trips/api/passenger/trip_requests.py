@@ -1,7 +1,10 @@
 from apps.accounts.models import UserSession
+from apps.trips.enums import TripState
 from apps.trips.serializers import (
     TripRequestCreateSerializer,
+    TripRequestExtendSerializer,
     TripRequestListSerializer,
+    TripRequestPassengerSerializer,
     TripRequestStateChangeSerializer,
 )
 from apps.trips.services import TripRequestService
@@ -32,10 +35,11 @@ class PassengerTripRequestAPIViewSet(
             "create": TripRequestCreateSerializer,
             "cancel_trip_request": TripRequestStateChangeSerializer,
             "complete_trip_request": TripRequestStateChangeSerializer,
-        }.get(self.action, TripRequestCreateSerializer)
+            "extend_trip_request": TripRequestExtendSerializer,
+        }.get(self.action, TripRequestPassengerSerializer)
 
     def get_queryset(self):
-        qs = self.model.objects.active()
+        qs = self.model.objects.filter(state=TripState.ACTIVE)
 
         if self.action == "list":
             user_session_id = self.request.query_params.get("user_session")
@@ -107,3 +111,16 @@ class PassengerTripRequestAPIViewSet(
         TripRequestService.complete_requested_trip(instance, serializer.validated_data)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @transaction.atomic
+    @action(detail=True, methods=["post"], url_path="extend")
+    def extend_trip_request(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        trip_request = TripRequestService.extend_trip_request(
+            instance, serializer.validated_data.get("extend_for")
+        )
+
+        return Response(TripRequestPassengerSerializer(trip_request).data)

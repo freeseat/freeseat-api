@@ -1,7 +1,7 @@
 from apps.trips.filters import TripRequestFilter
-from apps.trips.serializers import (
+from apps.trips.serializers import (  # TripRequestSearchSerializer,
+    TripRequestDetailSerializer,
     TripRequestListSerializer,
-    TripRequestSearchSerializer,
 )
 from apps.trips.services import TripRequestService
 from django.contrib.gis.db.models.functions import Distance
@@ -9,9 +9,10 @@ from django.contrib.gis.geos import Point
 from django_filters.rest_framework import DjangoFilterBackend
 from packages.math.metric_buffer import with_metric_buffer
 from packages.restframework.pagination import PageNumberPaginationWithPageCounter
-from rest_framework import permissions, status, viewsets
-from rest_framework.decorators import action
-from rest_framework.response import Response
+from rest_framework import permissions, viewsets
+
+# from rest_framework.decorators import action
+# from rest_framework.response import Response
 
 __all__ = ["DriverTripRequestAPIViewSet"]
 
@@ -40,6 +41,8 @@ class DriverTripRequestAPIViewSet(viewsets.ReadOnlyModelViewSet):
     def get_serializer_class(self):
         # if self.action == "search":
         #     return TripRequestSearchSerializer
+        if self.request.query_params.get("return_routes", False) == "true":
+            return TripRequestDetailSerializer
         return super().get_serializer_class()
 
     def get_queryset(self):

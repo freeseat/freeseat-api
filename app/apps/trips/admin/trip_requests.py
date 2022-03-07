@@ -27,6 +27,7 @@ class TripRequestAdmin(
         "state",
         "is_verified",
         "comment",
+        "phone_number",
         "number_of_displays",
     )
     list_editable = (

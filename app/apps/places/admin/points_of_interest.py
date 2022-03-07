@@ -20,6 +20,7 @@ class PointOfInterestAdmin(
     admin.OSMGeoAdmin,
 ):
     list_display = (
+        "id",
         "name",
         "link_to_category",
         "link_to_created_by",
@@ -32,7 +33,10 @@ class PointOfInterestAdmin(
         "created_by",
     )
     date_hierarchy = "created_at"
-    list_display_links = ("name",)
+    list_display_links = (
+        "id",
+        "name",
+    )
     autocomplete_fields = ("category",)
     list_filter = ("is_active",)
 
