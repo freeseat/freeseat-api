@@ -6,6 +6,7 @@ from apps.trips.serializers import (  # TripRequestSearchSerializer,
 from apps.trips.services import TripRequestService
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
+from django.db.models import Count
 from django_filters.rest_framework import DjangoFilterBackend
 from packages.math.metric_buffer import with_metric_buffer
 from packages.restframework.pagination import PageNumberPaginationWithPageCounter
@@ -47,7 +48,11 @@ class DriverTripRequestAPIViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         qs = self.model.objects.active()
-        return qs.prefetch_related("trip__waypoints")
+        return (
+            qs.prefetch_related("trip__waypoints")
+            .annotate(number_of_waypoints=Count("trip__waypoints"))
+            .filter(number_of_waypoints__gt=1)
+        )
 
     def filter_queryset(self, qs):
 

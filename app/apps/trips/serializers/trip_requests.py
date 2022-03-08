@@ -20,29 +20,16 @@ __all__ = [
 class TripRequestListSerializer(serializers.ModelSerializer):
     waypoints = WayPointSerializer(source="trip.waypoints", many=True, allow_null=True)
     route_length = serializers.FloatField(source="trip.route_length", allow_null=True)
-    route = GeometryField(write_only=True, source="trip.route", allow_null=True)
+    route = GeometryField(
+        write_only=True, source="trip.route", allow_null=True, required=False
+    )
     distance_in_km = serializers.FloatField(
         source="distance.km", read_only=True, default=None
     )
 
-    def validate_waypoints(self, waypoints):
-        if len(waypoints) < 2:
-            raise ValidationError(
-                {
-                    "waypoints": [_("This list should contain at least 2 points.")],
-                }
-            )
-
-        return waypoints
-
     class Meta:
         model = TripRequest
-        read_only_fields = [
-            "id",
-            "updated_at",
-            "distance_in_km",
-            "active_until"
-        ]
+        read_only_fields = ["id", "updated_at", "distance_in_km", "active_until"]
         fields = read_only_fields + [
             "spoken_languages",
             "number_of_people",
@@ -120,4 +107,3 @@ class TripRequestExtendSerializer(serializers.ModelSerializer):
 
 class TripRequestPassengerSerializer(TripRequestDetailSerializer):
     pass
-

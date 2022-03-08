@@ -8,7 +8,7 @@ __all__ = []
 
 class WayPointInline(admin.TabularInline):
     model = WayPoint
-    min_num = 2
+    min_num = 1
     extra = 0
     formfield_overrides = {
         PointField: {"widget": OSMWidget},
