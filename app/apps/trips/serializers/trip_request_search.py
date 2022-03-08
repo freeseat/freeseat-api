@@ -7,8 +7,8 @@ __all__ = ["TripRequestSearchSerializer"]
 
 
 class TripRequestSearchSerializer(serializers.ModelSerializer):
-    deviation = serializers.IntegerField()
-    waypoints = WayPointSerializer(many=True)
+    max_deviation = serializers.IntegerField()
+    # waypoints = WayPointSerializer(many=True)
     route = GeometryField()
     page_size = serializers.IntegerField(default=20)
     disable_pagination = serializers.BooleanField(default=False)
@@ -21,9 +21,9 @@ class TripRequestSearchSerializer(serializers.ModelSerializer):
             "with_pets",
             "number_of_people",
             "luggage_size",
-            "waypoints",
+            # "waypoints",
             "route",
-            "deviation",
+            "max_deviation",
             "page_size",
             "disable_pagination",
         ]
