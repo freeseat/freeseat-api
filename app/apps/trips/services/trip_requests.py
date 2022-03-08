@@ -17,7 +17,7 @@ class TripRequestService:
         waypoints = trip_data.pop("waypoints")
         spoken_languages = data.pop("spoken_languages")
 
-        active_for = data.get("active_for", 24 * 60 * 60)
+        active_for = data.pop("active_for", 24 * 60 * 60)
 
         active_until = timezone.now() + timezone.timedelta(seconds=active_for)
 
@@ -47,6 +47,10 @@ class TripRequestService:
         waypoints = trip_data.pop("waypoints")
         spoken_languages = data.pop("spoken_languages")
 
+        active_for = data.pop("active_for", 24 * 60 * 60)
+
+        active_until = timezone.now() + timezone.timedelta(seconds=active_for)
+
         trip = trip_request.trip
 
         Trip.objects.filter(id=trip.id).update(**trip_data)
@@ -62,7 +66,7 @@ class TripRequestService:
 
         data["starting_point"] = trip.waypoints.first().point
 
-        TripRequest.objects.filter(id=trip_request.id).update(**data)
+        TripRequest.objects.filter(id=trip_request.id).update(active_until=active_until, **data)
         trip_request.spoken_languages.set(spoken_languages)
 
         trip_request.refresh_from_db()

@@ -39,8 +39,9 @@ class TripRequestListSerializer(serializers.ModelSerializer):
         model = TripRequest
         read_only_fields = [
             "id",
-            "last_active_at",
+            "updated_at",
             "distance_in_km",
+            "active_until"
         ]
         fields = read_only_fields + [
             "spoken_languages",
@@ -118,5 +119,5 @@ class TripRequestExtendSerializer(serializers.ModelSerializer):
 
 
 class TripRequestPassengerSerializer(TripRequestDetailSerializer):
-    class Meta(TripRequestDetailSerializer.Meta):
-        fields = TripRequestDetailSerializer.Meta.fields + ["active_for"]
+    pass
+
