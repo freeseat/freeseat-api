@@ -123,17 +123,16 @@ class TripRequestService:
         trip_request: TripRequest,
         extend_for: int,
     ) -> TripRequest:
+        now = timezone.now()
+        extend_until = now + timezone.timedelta(seconds=extend_for)
 
-        if trip_request.is_active:
-            trip_request.active_until = trip_request.active_until + timezone.timedelta(
-                seconds=extend_for
-            )
+        if extend_until < trip_request.active_until:
+            pass
+
         else:
-            trip_request.active_until = timezone.now() + timezone.timedelta(
-                seconds=extend_for
-            )
+            trip_request.active_until = extend_until
+            trip_request.save(update_fields=["active_until", "updated_at"])
 
-        trip_request.save(update_fields=["active_until", "updated_at"])
         return trip_request
 
     @classmethod
