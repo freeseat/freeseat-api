@@ -47,12 +47,10 @@ class WayPoint(AbstractUUIDModel):
 
     @classmethod
     def update_country_based_on_location(cls, sender, instance, *args, **kwargs):
-        print('updating')
         country = Country.objects.filter(
             territory__covers=instance.point
         ).first()
         instance.country = country
-        print(country)
 
 
 pre_save.connect(WayPoint.update_country_based_on_location, sender=WayPoint)
