@@ -11,8 +11,10 @@ __all__ = ["WaitingPassengerViewSet"]
 class WaitingPassengerViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = TripRequestListSerializer
     model = TripRequestListSerializer.Meta.model
-    queryset = model.objects.active()
     pagination_class = PageNumberPaginationWithPageCounter
+
+    def get_queryset(self):
+        return self.model.objects.active()
 
     def get_serializer_class(self):
         if self.action == "list":
