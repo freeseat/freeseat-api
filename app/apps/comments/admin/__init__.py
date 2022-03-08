@@ -1,1 +1,1 @@
-from apps.comments.admin.comments import *
+# from apps.comments.admin.comments import *
