@@ -154,6 +154,12 @@ class TripRequest(AbstractUUIDModel, GeoItem):
         ordering = ("-trip__route_length", "-updated_at")
 
     @property
+    def is_active(self):
+        if self.active_until and self.active_until > timezone.now():
+            return True
+        return False
+
+    @property
     def geomap_longitude(self):
         return self.starting_point.x if self.starting_point else None
 

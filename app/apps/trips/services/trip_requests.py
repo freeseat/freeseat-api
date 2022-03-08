@@ -124,7 +124,7 @@ class TripRequestService:
         extend_for: int,
     ) -> TripRequest:
 
-        if trip_request.active_for:
+        if trip_request.is_active:
             trip_request.active_until = trip_request.active_until + timezone.timedelta(
                 seconds=extend_for
             )
