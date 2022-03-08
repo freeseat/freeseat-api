@@ -21,7 +21,7 @@ class TripRequestListSerializer(serializers.ModelSerializer):
     waypoints = WayPointSerializer(source="trip.waypoints", many=True, allow_null=True)
     route_length = serializers.FloatField(source="trip.route_length", allow_null=True)
     route = GeometryField(
-        write_only=True, source="trip.route", allow_null=True, required=False
+        write_only=True, source="trip.route", allow_null=True, required=False, default=None,
     )
     distance_in_km = serializers.FloatField(
         source="distance.km", read_only=True, default=None
