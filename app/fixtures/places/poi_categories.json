@@ -1,0 +1,52 @@
+[
+{
+    "model": "places.poicategory",
+    "pk": "border_crossing",
+    "fields": {
+        "path": "0001",
+        "depth": 1,
+        "numchild": 0,
+        "created_at": "2022-03-07T22:40:07.805Z",
+        "updated_at": "2022-03-07T22:40:07.812Z",
+        "created_by": "bb9f296c-e624-4b8b-a96f-35e835ed7d8b",
+        "name": "Border",
+        "name_en": "Border",
+        "name_ru": null,
+        "name_uk": null,
+        "name_pl": null,
+        "name_de": null,
+        "description": "",
+        "description_en": "",
+        "description_ru": "",
+        "description_uk": "",
+        "description_pl": "",
+        "description_de": "",
+        "is_active": true
+    }
+},
+{
+    "model": "places.poicategory",
+    "pk": "city",
+    "fields": {
+        "path": "0002",
+        "depth": 1,
+        "numchild": 0,
+        "created_at": "2022-03-07T22:37:19.842Z",
+        "updated_at": "2022-03-07T22:37:19.842Z",
+        "created_by": null,
+        "name": "City",
+        "name_en": "City",
+        "name_ru": "",
+        "name_uk": "",
+        "name_pl": "",
+        "name_de": "",
+        "description": "",
+        "description_en": "",
+        "description_ru": "",
+        "description_uk": "",
+        "description_pl": "",
+        "description_de": "",
+        "is_active": true
+    }
+}
+]
