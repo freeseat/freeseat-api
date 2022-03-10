@@ -1,5 +1,6 @@
 from apps.trips.api import (
     DriverTripRequestAPIViewSet,
+    DriverTripProposalAPIViewSet,
     PassengerTripRequestAPIViewSet,
     WaitingPassengerViewSet,
 )
@@ -13,6 +14,11 @@ router.register(
     r"driver/requested-trips",
     DriverTripRequestAPIViewSet,
     basename="driver-trip-requests",
+)
+router.register(
+    r"driver/proposed-trips",
+    DriverTripProposalAPIViewSet,
+    basename="driver-trip-proposals",
 )
 router.register(
     r"driver/waiting-passengers",

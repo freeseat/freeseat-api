@@ -12,10 +12,10 @@ from rest_framework import mixins, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-__all__ = ["PassengerTripProposalAPIViewSet"]
+__all__ = ["DriverTripProposalAPIViewSet"]
 
 
-class PassengerTripProposalAPIViewSet(
+class DriverTripProposalAPIViewSet(
     mixins.CreateModelMixin, viewsets.ReadOnlyModelViewSet
 ):
     """
@@ -31,8 +31,8 @@ class PassengerTripProposalAPIViewSet(
     def get_serializer_class(self):
         return {
             "create": TripProposalCreateSerializer,
-            "cancel_trip_request": TripProposalStateChangeSerializer,
-            "complete_trip_request": TripProposalStateChangeSerializer,
+            "cancel_trip_proposal": TripProposalStateChangeSerializer,
+            "complete_trip_proposal": TripProposalStateChangeSerializer,
         }.get(self.action, TripProposalCreateSerializer)
 
     def get_queryset(self):
@@ -54,7 +54,7 @@ class PassengerTripProposalAPIViewSet(
         return qs.prefetch_related("trip__waypoints")
 
     def perform_update(self, serializer):
-        return TripProposalService.update_requested_trip(
+        return TripProposalService.update_proposed_trip(
             serializer.instance, serializer.validated_data
         )
 
@@ -76,7 +76,7 @@ class PassengerTripProposalAPIViewSet(
         return Response(serializer.data)
 
     def perform_create(self, serializer):
-        return TripProposalService.request_trip(serializer.validated_data)
+        return TripProposalService.propose_trip(serializer.validated_data)
 
     @transaction.atomic
     def create(self, request, *args, **kwargs):
@@ -93,7 +93,7 @@ class PassengerTripProposalAPIViewSet(
 
     @transaction.atomic
     @action(detail=True, methods=["post"], url_path="cancel")
-    def cancel_trip_request(self, request, *args, **kwargs):
+    def cancel_trip_proposal(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -104,11 +104,11 @@ class PassengerTripProposalAPIViewSet(
 
     @transaction.atomic
     @action(detail=True, methods=["post"], url_path="complete")
-    def complete_trip_request(self, request, *args, **kwargs):
+    def complete_trip_proposal(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        TripProposalService.complete_requested_trip(instance)
+        TripProposalService.complete_proposed_trip(instance)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
