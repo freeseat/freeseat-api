@@ -24,16 +24,6 @@ class TripProposalListSerializer(serializers.ModelSerializer):
     )
     contact_information = ContactInformationSerializer()
 
-    def validate_waypoints(self, waypoints):
-        if len(waypoints) < 2:
-            raise ValidationError(
-                {
-                    "waypoints": [_("This list should contain at least 2 points.")],
-                }
-            )
-
-        return waypoints
-
     class Meta:
         model = TripProposal
         read_only_fields = [
@@ -41,7 +31,6 @@ class TripProposalListSerializer(serializers.ModelSerializer):
             "distance_in_km",
         ]
         fields = read_only_fields + [
-            "s",
             "spoken_languages",
             "number_of_seats",
             "pets_allowed",

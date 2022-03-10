@@ -7,6 +7,5 @@ urlpatterns = [
     path(
         "user-sessions/", UserSessionCreateAPIView.as_view(), name="user-sessions-list"
     ),
-    # TODO: drop
-    path("languages/", LanguageListAPIView.as_view(), name="languages-list"),
+    # path("languages/", LanguageListAPIView.as_view(), name="languages-list"),
 ]
