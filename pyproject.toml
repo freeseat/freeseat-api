@@ -19,7 +19,7 @@ Pillow = "^9.0.1"
 drf-spectacular = "^0.21.2"
 django-picklefield = "^3.0.1"
 django-admin-geomap = {git = "https://github.com/julleks/django.admin.geomap.git", rev = "main"}
-sentry-sdk = "^1.5.6"
+sentry-sdk = "^1.9.7"
 django-cors-headers = "^3.11.0"
 newrelic = "^7.6.0"
 pytest-django = "^4.5.2"
